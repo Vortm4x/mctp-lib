@@ -14,6 +14,8 @@ typedef enum __attribute__ ((__packed__))
     MCTP_MSG_TYPE_NCSI          = 0x02,
     MCTP_MSG_TYPE_ETHERNET      = 0x03,
     MCTP_MSG_TYPE_NVM_EXPRESS   = 0x04,
+    MCTP_MSG_TYPE_SPDM          = 0x05,
+    MCTP_MSG_TYPE_SECURED       = 0x06,
     MCTP_MSG_TYPE_VENDOR_PCI    = 0x7E,
     MCTP_MSG_TYPE_VENDOR_IANA   = 0x7F,
 }
