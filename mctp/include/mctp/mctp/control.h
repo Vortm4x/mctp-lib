@@ -34,6 +34,19 @@ typedef enum __attribute__ ((__packed__)) mctp_ctrl_cmd_t
 mctp_ctrl_cmd_t;
 
 
+typedef enum __attribute__ ((__packed__)) mctp_ctrl_cc_t
+{
+    MCTP_CTRL_CC_SUCCESS                    = 0x00,
+    MCTP_CTRL_CC_ERROR_GENERIC              = 0x01,
+    MCTP_CTRL_CC_ERROR_INVALID_DATA         = 0x02,
+    MCTP_CTRL_CC_ERROR_INVALID_LENGTH       = 0x03,
+    MCTP_CTRL_CC_ERROR_NOT_READY            = 0x04,
+    MCTP_CTRL_CC_ERROR_UNSUPPORTED_CMD      = 0x05,
+    MCTP_CTRL_CC_MSG_TYPE_NOT_SUPPORTED     = 0x80,
+}
+mctp_ctrl_cc_t;
+
+
 typedef struct __attribute__ ((__packed__)) mctp_ctrl_header_t
 {
     mctp_generic_header_t base;
@@ -44,6 +57,15 @@ typedef struct __attribute__ ((__packed__)) mctp_ctrl_header_t
     mctp_ctrl_cmd_t command;
 }
 mctp_ctrl_header_t;
+
+
+typedef struct __attribute__ ((__packed__)) mctp_resp_error_t
+{
+    mctp_ctrl_header_t header;
+    mctp_ctrl_cc_t completion_code;
+}
+mctp_resp_error_t;
+
 
 
 #endif // CONTROL_H
