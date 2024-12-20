@@ -6,7 +6,7 @@
 #include <mctp/base.h>
 
 
-typedef enum __attribute__ ((__packed__)) mctp_ctrl_cmd_t
+typedef enum __attribute__ ((__packed__))
 {
     MCTP_CTRL_CMD_RESERVED                          = 0x00,
     MCTP_CTRL_CMD_SET_ENDPOINT_ID                   = 0x01,
@@ -34,7 +34,7 @@ typedef enum __attribute__ ((__packed__)) mctp_ctrl_cmd_t
 mctp_ctrl_cmd_t;
 
 
-typedef enum __attribute__ ((__packed__)) mctp_ctrl_cc_t
+typedef enum __attribute__ ((__packed__))
 {
     MCTP_CTRL_CC_SUCCESS                    = 0x00,
     MCTP_CTRL_CC_ERROR_GENERIC              = 0x01,
@@ -47,7 +47,7 @@ typedef enum __attribute__ ((__packed__)) mctp_ctrl_cc_t
 mctp_ctrl_cc_t;
 
 
-typedef struct __attribute__ ((__packed__)) mctp_ctrl_header_t
+typedef struct __attribute__ ((__packed__))
 {
     mctp_generic_header_t base;
     uint8_t instance    : 5;
@@ -59,13 +59,105 @@ typedef struct __attribute__ ((__packed__)) mctp_ctrl_header_t
 mctp_ctrl_header_t;
 
 
-typedef struct __attribute__ ((__packed__)) mctp_resp_error_t
+typedef struct __attribute__ ((__packed__))
 {
     mctp_ctrl_header_t header;
     mctp_ctrl_cc_t completion_code;
 }
 mctp_resp_error_t;
 
+
+// Message fields types
+typedef enum __attribute__ ((__packed__))
+{
+    MCTP_SET_EID_OP_SET_EID     = 0b00,
+    MCTP_SET_EID_OP_FORCE_EID   = 0b01,
+    MCTP_SET_EID_OP_RESET_EID   = 0b10,
+    MCTP_SET_EID_OP_DISCOVERED  = 0b11,
+}
+mctp_set_eid_op_t;
+
+typedef enum __attribute__ ((__packed__))
+{
+    MCTP_EID_ALLOC_STATUS_POOL_NOT_USED = 0b00,
+    MCTP_EID_ALLOC_STATUS_POOL_REQUIRED = 0b01,
+    MCTP_EID_ALLOC_STATUS_POOL_EXIST    = 0b10,
+    MCTP_EID_ALLOC_STATUS_RESERVED_b11  = 0b11,
+}
+mctp_eid_alloc_status_t;
+
+typedef enum __attribute__ ((__packed__))
+{
+    MCTP_EID_ASSIGN_STATUS_ACCEPTED        = 0b00,
+    MCTP_EID_ASSIGN_STATUS_REJECTED        = 0b01,
+    MCTP_EID_ASSIGN_STATUS_RESERVED_b10    = 0b10,
+    MCTP_EID_ASSIGN_STATUS_RESERVED_b11    = 0b11,
+}
+mctp_eid_assign_status_t;
+
+typedef enum __attribute__ ((__packed__))
+{
+    MCTP_EID_TYPE_DYNAMIC           = 0b00,
+    MCTP_EID_TYPE_STATIC            = 0b01,
+    MCTP_EID_TYPE_STATIC_MATCH      = 0b10,
+    MCTP_EID_TYPE_STATIC_NO_MATCH   = 0b11,
+}
+mctp_eid_type_t;
+
+typedef enum __attribute__ ((__packed__))
+{
+    MCTP_ENDPOINT_TYPE_SIMPLE        = 0b00,
+    MCTP_ENDPOINT_TYPE_BRIDGE        = 0b01,
+    MCTP_ENDPOINT_TYPE_BUS_OWNER     = 0b01,
+    MCTP_ENDPOINT_TYPE_RESERVED_b10  = 0b10,
+    MCTP_ENDPOINT_TYPE_RESERVED_b11  = 0b11,
+}
+mctp_endpoint_type_t;
+
+
+// MCTP_CTRL_CMD_SET_ENDPOINT_ID
+typedef struct __attribute__ ((__packed__))
+{
+    mctp_ctrl_header_t header;
+    mctp_set_eid_op_t operation : 2;
+    uint8_t                     : 6;
+    mctp_eid_t eid;
+}
+mctp_req_set_endpoint_id_t;
+
+typedef struct __attribute__ ((__packed__))
+{
+    mctp_ctrl_header_t header;
+    mctp_ctrl_cc_t completion_code;
+    mctp_eid_alloc_status_t eid_alloc_status    : 2; 
+    uint8_t                                     : 2;
+    mctp_eid_assign_status_t eid_assign_status  : 2;
+    uint8_t                                     : 2;
+    mctp_eid_t eid_setting;
+    uint8_t eid_pool_size;
+}
+mctp_resp_set_endpoint_id_t;
+
+
+// MCTP_CTRL_CMD_GET_ENDPOINT_ID
+typedef struct __attribute__ ((__packed__))
+{
+    mctp_ctrl_header_t header;
+}
+mctp_req_get_endpoint_id_t;
+
+typedef struct __attribute__ ((__packed__))
+{
+    mctp_ctrl_header_t header;
+    mctp_ctrl_cc_t completion_code;
+    mctp_eid_t eid;
+    mctp_eid_type_t eid_type            : 2;
+    uint8_t                             : 2;
+    mctp_endpoint_type_t endpoint_type  : 2;
+    uint8_t                             : 2;
+    uint8_t medium_info;
+}
+mctp_resp_get_endpoint_id_t;
 
 
 #endif // CONTROL_H
