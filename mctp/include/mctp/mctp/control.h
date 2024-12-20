@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <mctp/base.h>
 
+#define MCTP_MSG_TYPE_BASE_SPEC 0xFF
+
 
 typedef enum __attribute__ ((__packed__))
 {
@@ -114,6 +116,20 @@ typedef enum __attribute__ ((__packed__))
 }
 mctp_endpoint_type_t;
 
+typedef union __attribute__ ((__packed__))
+{
+    struct
+    {
+        uint8_t alpha;
+        uint8_t update;
+        uint8_t minor;
+        uint8_t major;
+    };
+    uint32_t version;
+}
+mctp_ver_t;
+
+
 // MCTP Control messasge layouts
 #define __MCTP_REQ_LAYOUT(...)                  \
     typedef struct __attribute__ ((__packed__)) \
@@ -166,7 +182,6 @@ mctp_resp_get_endpoint_id_t;
 
 
 // MCTP_CTRL_CMD_GET_ENDPOINT_UUID
-
 __MCTP_REQ_LAYOUT()
 mctp_req_get_endpoint_uuid_t;
 
@@ -174,6 +189,56 @@ __MCTP_RESP_LAYOUT(
     uint8_t uuid[16];
 )
 mctp_resp_get_endpoint_uuid_t;
+
+
+// MCTP_CTRL_CMD_GET_VERSION_SUPPORT
+__MCTP_REQ_LAYOUT(
+    mctp_msg_type_t message_type;
+)
+mctp_req_get_mctp_ver_t;
+
+__MCTP_RESP_LAYOUT(
+    uint8_t version_count;
+    mctp_ver_t version[];
+)
+mctp_resp_get_mctp_ver_t;
+
+
+// MCTP_CTRL_CMD_GET_MESSAGE_TYPE_SUPPORT
+__MCTP_REQ_LAYOUT()
+mctp_req_get_msg_type_t;
+
+__MCTP_RESP_LAYOUT(
+    uint8_t msg_type_count;
+    mctp_msg_type_t msg_types[];
+)
+mctp_resp_get_msg_type_t;
+
+
+// MCTP_CTRL_CMD_GET_VENDOR_MESSAGE_SUPPORT
+__MCTP_REQ_LAYOUT(
+    uint8_t vendor_id_selector;
+)
+mctp_req_get_vendor_t;
+
+__MCTP_RESP_LAYOUT(
+    uint8_t vendor_id_selector;
+)
+mctp_resp_get_vendor_t;
+
+
+// MCTP_CTRL_CMD_RESOLVE_ENDPOINT_ID
+__MCTP_REQ_LAYOUT(
+    mctp_eid_t target_eid;
+)
+mctp_req_resolve_eid_t;
+
+__MCTP_RESP_LAYOUT(
+
+    mctp_eid_t bridge_eid;
+    uint8_t physical_address[];
+)
+mctp_resp_resolve_eid_t;
 
 
 #endif // CONTROL_H
