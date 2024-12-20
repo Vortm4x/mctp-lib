@@ -114,50 +114,66 @@ typedef enum __attribute__ ((__packed__))
 }
 mctp_endpoint_type_t;
 
+// MCTP Control messasge layouts
+#define __MCTP_REQ_LAYOUT(...)                  \
+    typedef struct __attribute__ ((__packed__)) \
+    {                                           \
+        mctp_ctrl_header_t header;              \
+        __VA_ARGS__                             \
+    }
+
+#define __MCTP_RESP_LAYOUT(...)                 \
+    typedef struct __attribute__ ((__packed__)) \
+    {                                           \
+        mctp_ctrl_header_t header;              \
+        mctp_ctrl_cc_t completion_code;         \
+        __VA_ARGS__                             \
+    }
+
 
 // MCTP_CTRL_CMD_SET_ENDPOINT_ID
-typedef struct __attribute__ ((__packed__))
-{
-    mctp_ctrl_header_t header;
+__MCTP_REQ_LAYOUT(
     mctp_set_eid_op_t operation : 2;
     uint8_t                     : 6;
     mctp_eid_t eid;
-}
+)
 mctp_req_set_endpoint_id_t;
 
-typedef struct __attribute__ ((__packed__))
-{
-    mctp_ctrl_header_t header;
-    mctp_ctrl_cc_t completion_code;
+__MCTP_RESP_LAYOUT(
     mctp_eid_alloc_status_t eid_alloc_status    : 2; 
     uint8_t                                     : 2;
     mctp_eid_assign_status_t eid_assign_status  : 2;
     uint8_t                                     : 2;
     mctp_eid_t eid_setting;
     uint8_t eid_pool_size;
-}
+)
 mctp_resp_set_endpoint_id_t;
 
 
 // MCTP_CTRL_CMD_GET_ENDPOINT_ID
-typedef struct __attribute__ ((__packed__))
-{
-    mctp_ctrl_header_t header;
-}
+__MCTP_REQ_LAYOUT()
 mctp_req_get_endpoint_id_t;
 
-typedef struct __attribute__ ((__packed__))
-{
-    mctp_ctrl_header_t header;
-    mctp_ctrl_cc_t completion_code;
+__MCTP_RESP_LAYOUT(
     mctp_eid_t eid;
     mctp_eid_type_t eid_type            : 2;
     uint8_t                             : 2;
     mctp_endpoint_type_t endpoint_type  : 2;
     uint8_t                             : 2;
     uint8_t medium_info;
-}
+)
 mctp_resp_get_endpoint_id_t;
+
+
+// MCTP_CTRL_CMD_GET_ENDPOINT_UUID
+
+__MCTP_REQ_LAYOUT()
+mctp_req_get_endpoint_uuid_t;
+
+__MCTP_RESP_LAYOUT(
+    uint8_t uuid[16];
+)
+mctp_resp_get_endpoint_uuid_t;
 
 
 #endif // CONTROL_H
