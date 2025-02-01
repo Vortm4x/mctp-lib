@@ -1,5 +1,5 @@
-#ifndef HOST_H
-#define HOST_H
+#ifndef _MCTP_CORE_MEDIUM_INFO_H_
+#define _MCTP_CORE_MEDIUM_INFO_H_
 
 typedef enum __attribute__ ((__packed__))
 {
@@ -66,4 +66,4 @@ typedef enum __attribute__ ((__packed__))
 }
 mctp_hif_type_t;
 
-#endif //HOST_H
+#endif // _MCTP_CORE_MEDIUM_INFO_H_ 

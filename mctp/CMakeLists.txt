@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 3.5 FATAL_ERROR)
 
-project(mctp C CXX)
+project(mctp C)
+
+set(CMAKE_C_STANDARD 11)
+set(C_STANDARD_REQUIRED TRUE)
 
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -13,11 +16,11 @@ target_link_libraries(${PROJECT_NAME}
     pico_rand
 )
 
-target_include_directories (${PROJECT_NAME}
-    PRIVATE ${PROJECT_ROOT}/include/mctp/mctp
-    PRIVATE ${PROJECT_ROOT}/include/mctp
-)   
+# target_include_directories (${PROJECT_NAME}
+#     PRIVATE ${PROJECT_ROOT}/include/mctp/mctp
+#     PRIVATE ${PROJECT_ROOT}/include/mctp
+# )   
 
 target_include_directories (${PROJECT_NAME}
-    PUBLIC ${PROJECT_ROOT}/include/mctp
+    PUBLIC ${PROJECT_ROOT}/include
 )

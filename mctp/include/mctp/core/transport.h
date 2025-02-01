@@ -1,7 +1,8 @@
-#ifndef TRANSPORT_H
-#define TRANSPORT_H
+#ifndef _MCTP_CORE_TRANSPORT_H_
+#define _MCTP_CORE_TRANSPORT_H_
 
-#include <mctp/base.h>
+#include <mctp/core/base.h>
+
 
 typedef struct __attribute__ ((__packed__))
 {
@@ -15,7 +16,7 @@ typedef struct __attribute__ ((__packed__))
     bool end_of_message         : 1;
     bool start_of_message       : 1;    
 }
-mctp_header_t;
+mctp_transport_header_t;
 
 
 #define MCTP_PACKET_SIZE(transaction_size, header_size, trail_size) \
@@ -27,6 +28,4 @@ mctp_header_t;
 #define MCTP_PAYLOAD_SIZE(transaction_size) \
     (transaction_size - sizeof(mctp_header_t))
 
-
-
-#endif //TRANSPORT_H
+#endif // _MCTP_CORE_TRANSPORT_H_
