@@ -30,7 +30,7 @@ typedef enum __attribute__ ((__packed__))
     MCTP_CTRL_CMD_REQUEST_TX_RATE_LIMIT         = 0x12,
     MCTP_CTRL_CMD_UPDATE_RATE_LIMIT             = 0x13,
     MCTP_CTRL_CMD_QUERY_SUPP_IF                 = 0x14,
-    MCTP_CTRL_CMD_MAX                           = 0x15,    
+    MCTP_CTRL_CMD_MAX                           = 0x15,
 }
 mctp_ctrl_cmd_t;
 
@@ -59,10 +59,25 @@ typedef struct __attribute__ ((__packed__))
 mctp_ctrl_header_t;
 
 
-void mctp_control_message_tx(
-    const mctp_ctrl_header_t* header,
-    const uint8_t payload[],
-    const size_t payload_len[]
+void mctp_ctrl_request_tx(
+    const mctp_ctrl_cmd_t command,
+    const bool datagram,
+    const uint8_t payload_data[],
+    const size_t payload_len
 );
+
+#define mctp_ctrl_empty_request_tx(command, datagram) \
+    mctp_ctrl_request_tx(command, datagram, NULL, 0);
+
+#define mctp_ctrl_payload_request_tx(payload, datagram) \
+    mctp_ctrl_request_tx(                               \
+        mctp_ctrl_get_command_by_request(payload),      \
+        datagram,                                       \
+        sizeof(payload) > 0 ?                           \
+            (const uint8_t*)&payload :                  \
+            NULL,                                       \
+        sizeof(payload)                                 \
+    )
+
 
 #endif // _MCTP_CONTROL_MESSAGE_H_

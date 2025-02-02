@@ -10,7 +10,7 @@
     {                                           \
         struct __attribute__ ((__packed__))     \
         {                                       \
-            int __MCTB_ZERO_PAYLOD_STUB[0];     \
+            int __MCTB_ZERO_PAYLOAD_STUB[0];    \
         };                                      \
         __VA_ARGS__                             \
     }
