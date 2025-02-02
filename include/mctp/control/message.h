@@ -1,8 +1,10 @@
 #ifndef _MCTP_CONTROL_MESSAGE_H_
 #define _MCTP_CONTROL_MESSAGE_H_
 
-#include <mctp/control/constants.h>
-#include <mctp/control/types.h>
+#include <mctp/control/request.h>
+#include <mctp/control/response.h>
+#include <mctp/core/base.h>
+#include <stddef.h>
 
 
 typedef enum __attribute__ ((__packed__))
@@ -57,6 +59,10 @@ typedef struct __attribute__ ((__packed__))
 mctp_ctrl_header_t;
 
 
-
+void mctp_control_message_tx(
+    const mctp_ctrl_header_t* header,
+    const uint8_t payload[],
+    const size_t payload_len[]
+);
 
 #endif // _MCTP_CONTROL_MESSAGE_H_

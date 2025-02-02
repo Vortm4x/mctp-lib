@@ -1,39 +1,31 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required (VERSION 3.5 FATAL_ERROR)
 
-set(PICO_BOARD pico_w)
-include(pico_sdk_import.cmake)
+project(mctp C)
 
-project(pico-mctp C CXX ASM)
+set(CMAKE_C_STANDARD 11)
+set(C_STANDARD_REQUIRED TRUE)
 
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_CXX_STANDARD 17)
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
-include(lwip_import.cmake)
-
-pico_sdk_init()
-
-add_subdirectory(mctp)
-
-
-add_executable(${PROJECT_NAME}
-    src/main.c
-)
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    pico_stdlib
-    pico_cyw43_arch_none
-    LWIP_PORT
-    mctp
+add_library (${PROJECT_NAME} STATIC
+    src/mctp.c
+    src/control.c
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE
-    -Wall
-    -Werror
+# target_include_directories (${PROJECT_NAME}
+#     PRIVATE ${PROJECT_ROOT}/include/mctp/mctp
+#     PRIVATE ${PROJECT_ROOT}/include/mctp
+# )
+
+target_include_directories (${PROJECT_NAME}
+    PUBLIC ${PROJECT_ROOT}/include
 )
 
-# Run the entire project in SRAM
-# pico_set_binary_type(pico-freertos copy_to_ram)
 
-pico_add_extra_outputs(${PROJECT_NAME})
+add_executable(${PROJECT_NAME}-test
+    test/main.c
+)
 
-pico_enable_stdio_usb(${PROJECT_NAME} 0)
-pico_enable_stdio_uart(${PROJECT_NAME} 1)
+target_link_libraries(${PROJECT_NAME}-test
+    PRIVATE mctp
+)

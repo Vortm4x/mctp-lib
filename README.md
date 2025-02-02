@@ -1,1 +1,1 @@
-# Raspberry Pi Pico MCTP
+# MCTP protocol library
