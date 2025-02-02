@@ -79,5 +79,4 @@ void mctp_ctrl_request_tx(
         sizeof(payload)                                 \
     )
 
-
 #endif // _MCTP_CONTROL_MESSAGE_H_
