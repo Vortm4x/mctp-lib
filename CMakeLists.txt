@@ -8,7 +8,8 @@ set(C_STANDARD_REQUIRED TRUE)
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library (${PROJECT_NAME} STATIC
-    src/mctp.c
+    src/bus.c
+    src/core.c
     src/control.c
 )
 

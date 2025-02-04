@@ -1,9 +1,11 @@
 #include <mctp/control/message.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 void mctp_ctrl_request_tx(
+    const mctp_bus_t *bus,
+    const mctp_eid_t dest,
     const mctp_ctrl_cmd_t command,
     const bool datagram,
     const uint8_t payload_data[],
@@ -11,7 +13,7 @@ void mctp_ctrl_request_tx(
 ) {
     static uint8_t curr_inst = 0;
 
-    mctp_ctrl_header_t header = {
+    const mctp_ctrl_header_t header = {
         .base = {
             .integrity_check = false,
             .type = MCTP_MSG_TYPE_CONTROL,
@@ -21,21 +23,38 @@ void mctp_ctrl_request_tx(
         .request = true
     };
 
-    uint8_t* message_data = NULL;
-    size_t message_len = 0;
+    const mctp_msg_ctx_t message_ctx = {
+        .eid = dest,
+        .message_tag = mctp_get_message_tag(),
+        .tag_owner = true
+    };
 
-    {
-        FILE* mctp_message = open_memstream((char**)&message_data, &message_len);
+    mctp_ctrl_message_tx(
+        bus,
+        &message_ctx,
+        &header,
+        payload_data,
+        payload_len
+    );
+}
 
-        fwrite(&header, sizeof(mctp_ctrl_header_t), 1, mctp_message);
-        if (payload_data != NULL) {
-            fwrite(payload_data, sizeof(uint8_t), payload_len, mctp_message);
-        }
+void mctp_ctrl_message_tx(
+    const mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx,
+    const mctp_ctrl_header_t *header,
+    const uint8_t payload_data[],
+    const size_t payload_len
+) {
+    const size_t message_len = sizeof(mctp_ctrl_header_t) + payload_len;
+    uint8_t message_data[message_len];
 
-        fclose(mctp_message);
-    }
+    memcpy(message_data, header, sizeof(mctp_ctrl_header_t));
+    memcpy(message_data + sizeof(mctp_ctrl_header_t), payload_data, payload_len);
 
-    //TO DO: mctp_message_tx(message_data, message_len);
-
-    free(message_data);
+    mctp_message_tx(
+        bus,
+        message_ctx,
+        message_data,
+        message_len
+    );
 }
