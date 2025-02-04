@@ -1,18 +1,13 @@
 #include <mctp/core/packet_queue.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 mctp_pktq_node_t *mctp_pktq_node_create(
-    const mctp_transport_header_t *header,
-    const uint8_t payload_data[],
-    const size_t payload_len
+    mctp_packet_t *packet
 ) {
     mctp_pktq_node_t *node = (mctp_pktq_node_t*)calloc(1, sizeof(mctp_pktq_node_t));
 
-    memcpy(&node->packet.header, header, sizeof(mctp_transport_header_t));
-    memcpy(node->packet.payload, payload_data, payload_len);
-    node->packet_len = payload_len + sizeof(mctp_transport_header_t);
+    node->packet = packet;
 
     return node;
 }
@@ -23,39 +18,50 @@ void mctp_pktq_node_destroy(
     free(node);
 }
 
-void mctp_pktq_push(
+void mctp_pktq_enqueue(
     mctp_pktq_t *queue,
-    mctp_pktq_node_t *node
+    mctp_packet_t *packet
 ) {
-    node->prev = queue->tail;
-    queue->tail = node;
+    mctp_pktq_node_t *node = mctp_pktq_node_create(packet);
 
-    while(queue->tail->prev != NULL) {
-        queue->tail = queue->tail->prev;
-    }
-
-    if(queue->head == NULL)
+    if(mctp_pktq_empty(queue))
     {
-        queue->head = node;
+        queue->front = node;
     }
+    else
+    {
+        queue->rear->next = node;
+    }
+
+    queue->rear = node;
 }
 
-mctp_pktq_node_t *mctp_pktq_pop(
+
+mctp_packet_t *mctp_pktq_dequeue(
     mctp_pktq_t *queue
 ) {
-    mctp_pktq_node_t *node = queue->head;
-    queue->head = node->prev;
+    mctp_packet_t *packet = NULL;
 
-    if(queue->head == NULL)
+    if(!mctp_pktq_empty(queue))
     {
-        queue->tail = NULL;
+        mctp_pktq_node_t *node = queue->front;
+        packet = node->packet;
+
+        queue->front = queue->front->next;
+
+        if(mctp_pktq_empty(queue))
+        {
+            queue->rear = NULL;
+        }
+
+        mctp_pktq_node_destroy(node);
     }
 
-    return node;
+    return packet;
 }
 
 bool mctp_pktq_empty(
     mctp_pktq_t *queue
 ) {
-    return (queue->head == NULL);
+    return (queue->front == NULL);
 }

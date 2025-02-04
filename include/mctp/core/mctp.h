@@ -35,7 +35,7 @@ void mctp_message_tx(
 
 void mctp_packet_tx(
     const mctp_bus_t *bus,
-    const mctp_pktq_node_t *node
+    const mctp_packet_t *packet
 );
 
 #endif // _MCTP_CORE_MCTP_H_ 

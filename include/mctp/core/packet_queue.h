@@ -6,36 +6,33 @@
 
 typedef struct mctp_pktq_node_t
 {
-    mctp_packet_t packet;
-    size_t packet_len;
-    struct mctp_pktq_node_t *prev;
+    mctp_packet_t *packet;
+    struct mctp_pktq_node_t *next;
 }
 mctp_pktq_node_t;
 
 typedef struct
 {
-    mctp_pktq_node_t *head;
-    mctp_pktq_node_t *tail;
+    mctp_pktq_node_t *front;
+    mctp_pktq_node_t *rear;
 }
 mctp_pktq_t;
 
 
 mctp_pktq_node_t *mctp_pktq_node_create(
-    const mctp_transport_header_t *header,
-    const uint8_t payload_data[],
-    const size_t payload_len
+    mctp_packet_t *packet
 );
 
 void mctp_pktq_node_destroy(
     mctp_pktq_node_t *node
 );
 
-void mctp_pktq_push(
+void mctp_pktq_enqueue(
     mctp_pktq_t *queue,
-    mctp_pktq_node_t *node
+    mctp_packet_t *packet
 );
 
-mctp_pktq_node_t *mctp_pktq_pop(
+mctp_packet_t *mctp_pktq_dequeue(
     mctp_pktq_t *queue
 );
 

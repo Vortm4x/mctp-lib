@@ -37,13 +37,13 @@ void mctp_message_disassemble(
             ? message_len - MCTP_BASE_MTU * i
             : MCTP_BASE_MTU;
 
-        mctp_pktq_node_t *node = mctp_pktq_node_create(
+        mctp_packet_t *packet = mctp_pkt_create(
             &header,
             payload_data,
             payload_len
         );
 
-        mctp_pktq_push(tx_queue, node);
+        mctp_pktq_enqueue(tx_queue, packet);
 
         header.pkt_seq++;
     }
@@ -65,21 +65,9 @@ void mctp_message_tx(
     );
 }
 
-#include <stdio.h>
 void mctp_packet_tx(
     const mctp_bus_t *bus,
-    const mctp_pktq_node_t *node
+    const mctp_packet_t *packet
 ) {
-    const mctp_transport_header_t *header = &(node->packet.header);
-
-    printf("MCTP Transport header\n");
-    printf("version:    0x%X\n",    header->version);
-    printf("dest:       0x%02X\n",  header->dest);
-    printf("source:     0x%02X\n",  header->source);
-    printf("tag:        0x%d\n",    header->tag);
-    printf("tag_owner:  0x%s\n",    header->tag_owner ? "YES" : "NO");
-    printf("pkt_seq:    0x%d\n",    header->pkt_seq);
-    printf("som:        0x%s\n",    header->som ? "YES" : "NO");
-    printf("eom:        0x%s\n",    header->eom ? "YES" : "NO");
-
+    // TO DO: binding packet tx
 }

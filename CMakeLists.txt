@@ -11,6 +11,7 @@ add_library (${PROJECT_NAME} STATIC
     src/core.c
     src/control.c
     src/bus.c
+    src/packet.c
     src/packet_queue.c
 )
 
