@@ -7,7 +7,6 @@ int main() {
     mctp_eid_t eid_source = 0xA;
     mctp_eid_t eid_dest = 0xB;
 
-
     mctp_bus_t* bus = mctp_bus_create();
     mctp_bus_set_eid(bus, eid_source);
 

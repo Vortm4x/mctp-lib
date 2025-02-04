@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
+
 
 typedef uint8_t mctp_eid_t;
 

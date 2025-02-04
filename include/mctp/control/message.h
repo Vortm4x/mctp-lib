@@ -5,7 +5,6 @@
 #include <mctp/control/response.h>
 #include <mctp/core/base.h>
 #include <mctp/core/mctp.h>
-#include <stddef.h>
 
 
 typedef enum __attribute__ ((__packed__))

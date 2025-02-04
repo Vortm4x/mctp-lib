@@ -8,15 +8,11 @@ set(C_STANDARD_REQUIRED TRUE)
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library (${PROJECT_NAME} STATIC
-    src/bus.c
     src/core.c
     src/control.c
+    src/bus.c
+    src/packet_queue.c
 )
-
-# target_include_directories (${PROJECT_NAME}
-#     PRIVATE ${PROJECT_ROOT}/include/mctp/mctp
-#     PRIVATE ${PROJECT_ROOT}/include/mctp
-# )
 
 target_include_directories (${PROJECT_NAME}
     PUBLIC ${PROJECT_ROOT}/include

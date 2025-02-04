@@ -2,11 +2,12 @@
 #define _MCTP_CORE_BUS_H_
 
 #include <mctp/core/base.h>
+#include <mctp/core/binding.h>
 
-
-typedef struct mctp_bus_t 
+typedef struct 
 {
 	mctp_eid_t eid;
+    mctp_binding_t *binding;
 }
 mctp_bus_t;
 
