@@ -17,7 +17,8 @@ mctp_msg_ctx_t;
 
 uint8_t mctp_get_message_tag();
 
-mctp_pktq_node_t* mctp_message_disassemble(
+void mctp_message_disassemble(
+    mctp_pktq_t *tx_queue,
     const mctp_eid_t source,
     const mctp_msg_ctx_t *message_ctx,
     const uint8_t message_data[],
@@ -25,11 +26,16 @@ mctp_pktq_node_t* mctp_message_disassemble(
 );
 
 void mctp_message_tx(
+    mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx,
     const uint8_t message_data[],
     const size_t message_len
 );
 
+void mctp_packet_tx(
+    const mctp_bus_t *bus,
+    const mctp_pktq_node_t *node
+);
 
 #endif // _MCTP_CORE_MCTP_H_ 

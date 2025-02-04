@@ -4,6 +4,7 @@
 
 
 void mctp_ctrl_request_tx(
+    mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
     const mctp_eid_t dest,
     const mctp_ctrl_cmd_t command,
@@ -20,7 +21,8 @@ void mctp_ctrl_request_tx(
         },
         .instance = curr_inst++,
         .datagram = datagram,
-        .request = true
+        .request = true,
+        .command = command
     };
 
     const mctp_msg_ctx_t message_ctx = {
@@ -30,6 +32,7 @@ void mctp_ctrl_request_tx(
     };
 
     mctp_ctrl_message_tx(
+        tx_queue,
         bus,
         &message_ctx,
         &header,
@@ -39,6 +42,7 @@ void mctp_ctrl_request_tx(
 }
 
 void mctp_ctrl_message_tx(
+    mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx,
     const mctp_ctrl_header_t *header,
@@ -52,9 +56,11 @@ void mctp_ctrl_message_tx(
     memcpy(message_data + sizeof(mctp_ctrl_header_t), payload_data, payload_len);
 
     mctp_message_tx(
+        tx_queue,
         bus,
         message_ctx,
         message_data,
         message_len
     );
 }
+

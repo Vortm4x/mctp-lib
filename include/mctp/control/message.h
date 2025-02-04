@@ -60,6 +60,7 @@ mctp_ctrl_header_t;
 
 
 void mctp_ctrl_request_tx(
+    mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
     const mctp_eid_t dest,
     const mctp_ctrl_cmd_t command,
@@ -69,6 +70,7 @@ void mctp_ctrl_request_tx(
 );
 
 void mctp_ctrl_message_tx(
+    mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx,
     const mctp_ctrl_header_t *header,
