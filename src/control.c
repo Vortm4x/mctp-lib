@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-void mctp_ctrl_request_tx(
+void mctp_ctrl_request_prepare(
     mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
     const mctp_eid_t dest,
@@ -31,7 +31,7 @@ void mctp_ctrl_request_tx(
         .tag_owner = true
     };
 
-    mctp_ctrl_message_tx(
+    mctp_ctrl_message_prepare(
         tx_queue,
         bus,
         &message_ctx,
@@ -41,7 +41,7 @@ void mctp_ctrl_request_tx(
     );
 }
 
-void mctp_ctrl_message_tx(
+void mctp_ctrl_message_prepare(
     mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx,
@@ -55,7 +55,7 @@ void mctp_ctrl_message_tx(
     memcpy(message_data, header, sizeof(mctp_ctrl_header_t));
     memcpy(message_data + sizeof(mctp_ctrl_header_t), payload_data, payload_len);
 
-    mctp_message_tx(
+    mctp_message_disassemble(
         tx_queue,
         bus,
         message_ctx,

@@ -19,18 +19,20 @@ uint8_t mctp_get_message_tag();
 
 void mctp_message_disassemble(
     mctp_pktq_t *tx_queue,
-    const mctp_eid_t source,
+    const mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx,
     const uint8_t message_data[],
     const size_t message_len
 );
 
-void mctp_message_tx(
+void mctp_pktq_drain(
     mctp_pktq_t *tx_queue,
-    const mctp_bus_t *bus,
-    const mctp_msg_ctx_t *message_ctx,
-    const uint8_t message_data[],
-    const size_t message_len
+    const mctp_bus_t *bus
+);
+
+void mctp_pktq_tx(
+    const mctp_pktq_t *tx_queue,
+    const mctp_bus_t *bus
 );
 
 void mctp_packet_tx(

@@ -27,6 +27,14 @@ void mctp_pktq_node_destroy(
     mctp_pktq_node_t *node
 );
 
+mctp_pktq_node_t *mctp_pktq_node_next(
+    const mctp_pktq_node_t *node
+);
+
+mctp_packet_t *mctp_pktq_node_pkt(
+    const mctp_pktq_node_t *node
+);
+
 void mctp_pktq_enqueue(
     mctp_pktq_t *queue,
     mctp_packet_t *packet
@@ -34,6 +42,10 @@ void mctp_pktq_enqueue(
 
 mctp_packet_t *mctp_pktq_dequeue(
     mctp_pktq_t *queue
+);
+
+mctp_pktq_node_t *mctp_pktq_front(
+    const mctp_pktq_t *queue
 );
 
 bool mctp_pktq_empty(

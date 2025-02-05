@@ -6,11 +6,6 @@ void mctp_pkt_header_dump(
     const mctp_transport_header_t *header
 );
 
-void mctp_txq_drain(
-    const mctp_bus_t *bus,
-    mctp_pktq_t *tx_queue
-);
-
 void send_ctrl_request();
 void send_large_message();
 
@@ -30,21 +25,6 @@ void mctp_pkt_header_dump(
     printf("\n");
 }
 
-void mctp_txq_drain(
-    const mctp_bus_t *bus,
-    mctp_pktq_t *tx_queue
-) {
-    while (!mctp_pktq_empty(tx_queue))
-    {
-        mctp_packet_t *packet = mctp_pktq_dequeue(tx_queue);
-
-        mctp_pkt_header_dump(&packet->header);
-        mctp_packet_tx(bus, packet);
-
-        mctp_pkt_destroy(packet);
-    }
-}
-
 void send_ctrl_request()
 {
     printf("----------Test send_ctrl_request started----------\n");
@@ -61,7 +41,7 @@ void send_ctrl_request()
         .msg_type = MCTP_MSG_TYPE_PLDM
     };
 
-    mctp_ctrl_request_tx(
+    mctp_ctrl_request_prepare(
         &tx_queue,
         bus,
         eid_dest,
@@ -71,8 +51,7 @@ void send_ctrl_request()
         sizeof(mctp_req_get_mctp_ver_t)
     );
 
-
-    mctp_txq_drain(bus, &tx_queue);
+    mctp_pktq_drain(&tx_queue, bus);
     mctp_bus_destroy(bus);
 
     printf("----------Test finished----------\n\n");
@@ -101,7 +80,7 @@ void send_large_message() {
         "automatically concatenate them into a single string. "
         "This avoids line length limits while keeping the code readable.";
 
-    mctp_message_tx(
+    mctp_message_disassemble(
         &tx_queue,
         bus,
         &message_ctx,
@@ -110,7 +89,7 @@ void send_large_message() {
     );
 
 
-    mctp_txq_drain(bus, &tx_queue);
+    mctp_pktq_drain(&tx_queue, bus);
     mctp_bus_destroy(bus);
 
     printf("----------Test finished----------\n\n");
