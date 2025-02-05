@@ -1,19 +1,62 @@
 #include <mctp/control/message.h>
 #include <stdio.h>
 
-int main() {
+
+void mctp_pkt_header_dump(
+    const mctp_transport_header_t *header
+);
+
+void mctp_txq_drain(
+    const mctp_bus_t *bus,
+    mctp_pktq_t *tx_queue
+);
+
+void send_ctrl_request();
+void send_large_message();
+
+
+void mctp_pkt_header_dump(
+    const mctp_transport_header_t *header
+) {
+    printf("MCTP Transport header\n");
+    printf("version:    0x%X\n",    header->version);
+    printf("dest:       0x%02X\n",  header->dest);
+    printf("source:     0x%02X\n",  header->source);
+    printf("tag:        0x%d\n",    header->tag);
+    printf("tag_owner:  0x%s\n",    header->tag_owner ? "YES" : "NO");
+    printf("pkt_seq:    0x%d\n",    header->pkt_seq);
+    printf("som:        0x%s\n",    header->som ? "YES" : "NO");
+    printf("eom:        0x%s\n",    header->eom ? "YES" : "NO");
+    printf("\n");
+}
+
+void mctp_txq_drain(
+    const mctp_bus_t *bus,
+    mctp_pktq_t *tx_queue
+) {
+    while (!mctp_pktq_empty(tx_queue))
+    {
+        mctp_packet_t *packet = mctp_pktq_dequeue(tx_queue);
+
+        mctp_pkt_header_dump(&packet->header);
+        mctp_packet_tx(bus, packet);
+
+        mctp_pkt_destroy(packet);
+    }
+}
+
+void send_ctrl_request()
+{
+    printf("----------Test send_ctrl_request started----------\n");
+
     mctp_eid_t eid_source = 0xA;
     mctp_eid_t eid_dest = 0xB;
-
-    mctp_bus_t *bus = mctp_bus_create();
-
-    mctp_bus_set_eid(bus, eid_source);
-
     mctp_pktq_t tx_queue = {};
 
+    mctp_bus_t *bus = mctp_bus_create();
+    mctp_bus_set_eid(bus, eid_source);
 
 
-/*
     mctp_req_get_mctp_ver_t payload = {
         .msg_type = MCTP_MSG_TYPE_PLDM
     };
@@ -27,7 +70,23 @@ int main() {
         (uint8_t*)&payload,
         sizeof(mctp_req_get_mctp_ver_t)
     );
-*/
+
+
+    mctp_txq_drain(bus, &tx_queue);
+    mctp_bus_destroy(bus);
+
+    printf("----------Test finished----------\n\n");
+}
+
+void send_large_message() {
+    printf("----------Test send_ctrl_request started----------\n");
+
+    mctp_eid_t eid_source = 0xA;
+    mctp_eid_t eid_dest = 0xB;
+    mctp_pktq_t tx_queue = {};
+    
+    mctp_bus_t *bus = mctp_bus_create();
+    mctp_bus_set_eid(bus, eid_source);
 
 
     const mctp_msg_ctx_t message_ctx = {
@@ -51,26 +110,13 @@ int main() {
     );
 
 
-    while (!mctp_pktq_empty(&tx_queue))
-    {
-        mctp_packet_t *packet = mctp_pktq_dequeue(&tx_queue);
-
-        const mctp_transport_header_t *header = &(packet->header);
-
-        printf("MCTP Transport header\n");
-        printf("version:    0x%X\n",    header->version);
-        printf("dest:       0x%02X\n",  header->dest);
-        printf("source:     0x%02X\n",  header->source);
-        printf("tag:        0x%d\n",    header->tag);
-        printf("tag_owner:  0x%s\n",    header->tag_owner ? "YES" : "NO");
-        printf("pkt_seq:    0x%d\n",    header->pkt_seq);
-        printf("som:        0x%s\n",    header->som ? "YES" : "NO");
-        printf("eom:        0x%s\n",    header->eom ? "YES" : "NO");
-        printf("\n");
-
-        mctp_packet_tx(bus, packet);
-        mctp_pkt_destroy(packet);
-    }
-
+    mctp_txq_drain(bus, &tx_queue);
     mctp_bus_destroy(bus);
+
+    printf("----------Test finished----------\n\n");
+}
+
+int main() {
+    send_ctrl_request();
+    send_large_message();
 }

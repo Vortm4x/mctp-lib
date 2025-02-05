@@ -61,7 +61,7 @@ mctp_packet_t *mctp_pktq_dequeue(
 }
 
 bool mctp_pktq_empty(
-    mctp_pktq_t *queue
+    const mctp_pktq_t *queue
 ) {
     return (queue->front == NULL);
 }

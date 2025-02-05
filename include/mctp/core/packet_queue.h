@@ -37,7 +37,7 @@ mctp_packet_t *mctp_pktq_dequeue(
 );
 
 bool mctp_pktq_empty(
-    mctp_pktq_t *queue
+    const mctp_pktq_t *queue
 );
 
 #endif // _MCTP_CORE_PACKET_QUEUE_H_
