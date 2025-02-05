@@ -92,3 +92,13 @@ bool mctp_pktq_empty(
 ) {
     return (queue->front == NULL);
 }
+
+void mctp_pktq_clear(
+    mctp_pktq_t *queue
+) {
+    while(!mctp_pktq_empty(queue))
+    {
+        mctp_packet_t* packet = mctp_pktq_dequeue(queue);
+        mctp_pkt_destroy(packet);
+    }
+}

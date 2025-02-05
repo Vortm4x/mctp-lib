@@ -52,4 +52,8 @@ bool mctp_pktq_empty(
     const mctp_pktq_t *queue
 );
 
+void mctp_pktq_clear(
+    mctp_pktq_t *queue
+);
+
 #endif // _MCTP_CORE_PACKET_QUEUE_H_
