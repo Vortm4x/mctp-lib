@@ -5,9 +5,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define MCTP_BASE_MTU 64
+
 
 typedef uint8_t mctp_eid_t;
-
 
 typedef enum __attribute__ ((__packed__)) {
     MCTP_MSG_TYPE_CONTROL       = 0x00,

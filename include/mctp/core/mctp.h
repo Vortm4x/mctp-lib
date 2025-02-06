@@ -2,6 +2,7 @@
 #define _MCTP_CORE_MCTP_H_
 
 #include <mctp/core/bus.h>
+#include <mctp/core/packet_queue.h>
 
 #define MCTP_PKT_HDR_VER 0b0001
 

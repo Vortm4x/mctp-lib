@@ -21,7 +21,7 @@ void mctp_pktq_node_destroy(
 mctp_pktq_node_t *mctp_pktq_node_next(
     const mctp_pktq_node_t *node
 ) {
-    if(node == NULL)
+    if (node == NULL)
     {
         return NULL;
     }
@@ -32,7 +32,7 @@ mctp_pktq_node_t *mctp_pktq_node_next(
 mctp_packet_t *mctp_pktq_node_pkt(
     const mctp_pktq_node_t *node
 ) {
-    if(node == NULL)
+    if (node == NULL)
     {
         return NULL;
     }
@@ -46,7 +46,7 @@ void mctp_pktq_enqueue(
 ) {
     mctp_pktq_node_t *node = mctp_pktq_node_create(packet);
 
-    if(mctp_pktq_empty(queue))
+    if (mctp_pktq_empty(queue))
     {
         queue->front = node;
     }
@@ -63,14 +63,14 @@ mctp_packet_t *mctp_pktq_dequeue(
 ) {
     mctp_packet_t *packet = NULL;
 
-    if(!mctp_pktq_empty(queue))
+    if (!mctp_pktq_empty(queue))
     {
         mctp_pktq_node_t *node = queue->front;
         packet = node->packet;
 
         queue->front = queue->front->next;
 
-        if(mctp_pktq_empty(queue))
+        if (mctp_pktq_empty(queue))
         {
             queue->rear = NULL;
         }
@@ -98,7 +98,7 @@ void mctp_pktq_clear(
 ) {
     while(!mctp_pktq_empty(queue))
     {
-        mctp_packet_t* packet = mctp_pktq_dequeue(queue);
+        mctp_packet_t *packet = mctp_pktq_dequeue(queue);
         mctp_pkt_destroy(packet);
     }
 }

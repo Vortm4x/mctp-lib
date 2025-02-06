@@ -3,9 +3,6 @@
 
 #include <mctp/core/base.h>
 
-#define MCTP_BASE_MTU 64
-
-
 typedef struct __attribute__ ((__packed__))
 {
     uint8_t version     : 4;

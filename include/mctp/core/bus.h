@@ -23,4 +23,9 @@ void mctp_bus_set_eid(
     const mctp_eid_t eid
 );
 
+void mctp_bus_transport_bind(
+    mctp_bus_t *bus,
+    mctp_binding_t *binding
+);
+
 #endif // _MCTP_CORE_BUS_H_

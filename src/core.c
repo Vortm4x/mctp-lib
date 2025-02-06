@@ -1,6 +1,5 @@
 #include <mctp/core/mctp.h>
 #include <mctp/core/binding.h>
-#include <string.h>
 
 
 uint8_t mctp_get_message_tag()
@@ -66,7 +65,7 @@ void mctp_pktq_tx(
     const mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus
 ) {
-    mctp_pktq_node_t* node = mctp_pktq_front(tx_queue);
+    mctp_pktq_node_t *node = mctp_pktq_front(tx_queue);
 
     while (node != NULL)
     {
@@ -81,5 +80,7 @@ void mctp_packet_tx(
     const mctp_bus_t *bus,
     const mctp_packet_t *packet
 ) {
-    // TO DO: binding packet tx
+    const mctp_binding_t *binding = bus->binding;
+
+    binding->packet_tx(binding, packet);
 }

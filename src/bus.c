@@ -21,3 +21,10 @@ void mctp_bus_set_eid(
 ) {
     bus->eid = eid;
 }
+
+void mctp_bus_binding_attach(
+    mctp_bus_t *bus,
+    mctp_binding_t *binding
+) {
+    bus->binding = binding;
+}
