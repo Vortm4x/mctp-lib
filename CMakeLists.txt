@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.5 FATAL_ERROR)
 
 project(mctp C)
 
+enable_testing()
+
 set(CMAKE_C_STANDARD 11)
 set(C_STANDARD_REQUIRED TRUE)
 
@@ -21,11 +23,6 @@ target_include_directories (${PROJECT_NAME}
     PUBLIC ${PROJECT_ROOT}/include
 )
 
+include(CTest)
 
-add_executable(${PROJECT_NAME}-test
-    test/main.c
-)
-
-target_link_libraries(${PROJECT_NAME}-test
-    PRIVATE mctp
-)
+add_subdirectory(test)

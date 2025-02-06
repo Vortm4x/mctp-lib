@@ -57,7 +57,7 @@ void mctp_serial_set_buffer_tx(
 );
 
 mctp_binding_t *mctp_serial_get_binding(
-    const mctp_serial_t *serial
+    mctp_serial_t *serial
 );
 
 void mctp_serial_buffer_map_init(
