@@ -69,13 +69,114 @@ void mctp_serial_packet_tx(
     crc = crc16_calc_byte(crc, buffer_map.header->byte_count);
     crc = crc16_calc_block(crc, buffer_map.packet, packet->len);
 
-    buffer_map.trailer->fcs_high = MCTP_CRC16_HIGH(crc);
-    buffer_map.trailer->fcs_low = MCTP_CRC16_LOW(crc);
+    buffer_map.trailer->fcs_high = MCTP_CRC16_GET_HIGH(crc);
+    buffer_map.trailer->fcs_low = MCTP_CRC16_GET_LOW(crc);
     buffer_map.trailer->framing_flag = MCTP_SERIAL_FRAME_FLAG;
 
-    const mctp_serial_t *serial_binding = container_of(
+    const mctp_serial_t *serial = container_of(
         binding, mctp_serial_t, binding
     );
 
-    serial_binding->buffer_tx(buffer_data, buffer_len);
+    serial->buffer_tx(buffer_data, buffer_len);
+}
+
+void mctp_serial_reset_rx_ctx(
+    mctp_serial_t* serial
+) {
+    memset(&serial->rx, 0, sizeof(&serial->rx));
+    serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_SYNC_START;
+}
+
+void mctp_serial_byte_rx(
+    const mctp_binding_t *binding,
+	const uint8_t byte
+) {
+    mctp_serial_t *serial = container_of(
+        binding, mctp_serial_t, binding
+    );
+
+    switch(serial->rx.state)
+    {
+        case MCTP_SERIAL_RX_STATE_WAIT_SYNC_START:
+        {
+            if(byte == MCTP_SERIAL_FRAME_FLAG)
+            {
+                serial->rx.fcs_calc = MCTP_CRC16_INIT;
+                serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_REVISION;
+            }
+        }
+        break;
+
+        case MCTP_SERIAL_RX_STATE_WAIT_REVISION:
+        {
+            switch (byte) {
+                case MCTP_SERIAL_REVISION:
+                    serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
+                    serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_LEN;
+                break;
+            
+                case MCTP_SERIAL_FRAME_FLAG:
+                break;
+
+                default:
+                    mctp_serial_reset_rx_ctx(serial);
+                    break;
+            }
+        }
+        break;
+
+        case MCTP_SERIAL_RX_STATE_WAIT_LEN:
+        {
+            if(sizeof(serial->rx.packet.header) < byte && byte <= sizeof(serial->rx.packet.data))
+            {
+                serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
+                serial->rx.packet.len = byte;
+                serial->rx.next_pkt_byte = 0;
+                serial->rx.state = MCTP_SERIAL_RX_STATE_DATA;
+            }
+            else
+            {
+                mctp_serial_reset_rx_ctx(serial);
+            }
+        }
+        break;
+
+        case MCTP_SERIAL_RX_STATE_DATA:
+        {
+            serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
+            serial->rx.packet.data[serial->rx.next_pkt_byte] = byte;
+            serial->rx.next_pkt_byte++;
+
+            if(serial->rx.packet.len == serial->rx.next_pkt_byte)
+            {
+                serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_FCS_HIGH;
+            }
+        }
+        break;
+
+        case MCTP_SERIAL_RX_STATE_WAIT_FCS_HIGH:
+        {
+            MCTP_CRC16_SET_HIGH(serial->rx.fcs_read, byte);
+            serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_FCS_LOW;
+        }
+        break;
+
+        case MCTP_SERIAL_RX_STATE_WAIT_FCS_LOW:
+        {
+            MCTP_CRC16_SET_LOW(serial->rx.fcs_read, byte);
+            serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_SYNC_END;
+        }
+        break;
+
+        case MCTP_SERIAL_RX_STATE_WAIT_SYNC_END:
+        {
+            if(byte == MCTP_SERIAL_FRAME_FLAG && serial->rx.fcs_calc == serial->rx.fcs_read)
+            {
+                // TO DO: mctp_packet_rx
+            }
+            
+            mctp_serial_reset_rx_ctx(serial);
+        }
+        break;
+    }
 }

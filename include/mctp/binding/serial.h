@@ -8,6 +8,19 @@
 #define MCTP_SERIAL_FRAME_FLAG      0x7E
 
 
+typedef enum mctp_serial_rx_state_t
+{
+    MCTP_SERIAL_RX_STATE_WAIT_SYNC_START,
+	MCTP_SERIAL_RX_STATE_WAIT_REVISION,
+    MCTP_SERIAL_RX_STATE_WAIT_LEN,
+	MCTP_SERIAL_RX_STATE_DATA,
+	MCTP_SERIAL_RX_STATE_WAIT_FCS_HIGH,
+	MCTP_SERIAL_RX_STATE_WAIT_FCS_LOW,
+	MCTP_SERIAL_RX_STATE_WAIT_SYNC_END,
+}
+mctp_serial_rx_state_t;
+
+
 typedef void (*mctp_serial_buffer_tx_t)(
     const uint8_t buffer_data[],
     const size_t buffer_len
@@ -17,6 +30,16 @@ typedef struct
 {
     mctp_binding_t binding;
     mctp_serial_buffer_tx_t buffer_tx;
+
+    struct
+    {
+        mctp_packet_t packet;
+        size_t next_pkt_byte;
+        mctp_serial_rx_state_t state;
+        uint16_t fcs_calc;
+        uint16_t fcs_read;
+    }
+    rx;
 }
 mctp_serial_t;
 
@@ -69,6 +92,15 @@ void mctp_serial_buffer_map_init(
 void mctp_serial_packet_tx(
     const mctp_binding_t *binding,
 	const mctp_packet_t *packet
+);
+
+void mctp_serial_reset_rx_ctx(
+    mctp_serial_t* serial
+);
+
+void mctp_serial_byte_rx(
+    const mctp_binding_t *binding,
+	const uint8_t byte
 );
 
 #endif // _MCTP_BINDING_SERIAL_H_
