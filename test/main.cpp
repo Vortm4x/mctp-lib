@@ -9,25 +9,19 @@ extern "C" {
 }
 
 
-void map_serial_buffer(
-    mctp_serial_buffer_map_t *buffer_map,
-    const uint8_t buffer_data[]
-) {
-    buffer_map->header = (mctp_serial_header_t *)buffer_data;
-    buffer_map->packet = (uint8_t *)(buffer_map->header + 1);
-    buffer_map->trailer = (mctp_serial_trailer_t *)(buffer_map->packet + buffer_map->header->byte_count);
-}
+struct
+{
+    mctp_bus_t *bus = NULL;
+    mctp_serial_t *serial = NULL;
+    mctp_binding_t *binding = NULL;
+} 
+test_env;
 
-void serial_buffer_tx(
-    const uint8_t buffer_data[],
-    const size_t buffer_len
-) {
-    mctp_serial_buffer_map_t buffer_map = {};
-    map_serial_buffer(&buffer_map, buffer_data);
 
-    serial_header_dump(buffer_map.header);
-    pkt_header_dump((mctp_transport_header_t *)buffer_map.packet);
-    serial_trailer_dump(buffer_map.trailer);
+void serial_byte_tx(
+    const uint8_t byte
+) {
+    mctp_serial_byte_rx(test_env.binding, byte);
 }
 
 
@@ -37,18 +31,18 @@ TEST_CASE( "MCTP tx message", "[tx]" ) {
     mctp_eid_t eid_dest = 0xB;
     mctp_pktq_t tx_queue = {};
 
-    mctp_bus_t *bus = mctp_bus_create();
-    REQUIRE( bus != NULL );
+    test_env.bus = mctp_bus_create();
+    REQUIRE( test_env.bus != NULL );
 
-    mctp_serial_t *serial = mctp_serial_create();
-    REQUIRE( serial != NULL );
+    test_env.serial = mctp_serial_create();
+    REQUIRE( test_env.serial != NULL );
 
-    mctp_binding_t *binding = mctp_serial_get_binding(serial);
-    REQUIRE( binding != NULL );
+    test_env.binding = mctp_serial_get_binding(test_env.serial);
+    REQUIRE( test_env.binding != NULL );
 
-    mctp_bus_set_eid(bus, eid_source);
-    mctp_bus_transport_bind(bus, binding);
-    mctp_serial_set_buffer_tx(serial, serial_buffer_tx);
+    mctp_bus_set_eid(test_env.bus, eid_source);
+    mctp_bus_transport_bind(test_env.bus, test_env.binding);
+    mctp_serial_set_byte_tx(test_env.serial, serial_byte_tx);
 
     // Prepare message
     const mctp_msg_ctx_t message_ctx = {
@@ -56,27 +50,27 @@ TEST_CASE( "MCTP tx message", "[tx]" ) {
         .message_tag = mctp_get_message_tag(),
         .tag_owner = true
     };
-    const uint8_t message_data[] =
-        "This is a very long string that exceeds 256 bytes. "
-        "You can split it into multiple quoted segments, and the compiler will "
-        "automatically concatenate them into a single string. "
-        "This avoids line length limits while keeping the code readable.";
+    const uint8_t message_data[] = {
+        0x7E, 0x7D, 0x5D, 0x5E
+    };
 
     // Fill tx queue
     mctp_message_disassemble(
         &tx_queue,
-        bus,
+        test_env.bus,
         &message_ctx,
         message_data,
         sizeof(message_data)
     );
 
     // Drain tx queue
-    mctp_pktq_drain(&tx_queue, bus);
+    mctp_pktq_drain(&tx_queue, test_env.bus);
 
     // Clean up
-    mctp_bus_destroy(bus);
-    mctp_serial_destroy(serial);
+    mctp_bus_destroy(test_env.bus);
+    mctp_serial_destroy(test_env.serial);
+
+    memset(&test_env, 0, sizeof(test_env));
 }
 
 
@@ -86,18 +80,18 @@ TEST_CASE( "MCTP tx control request", "[tx]" ) {
     mctp_eid_t eid_dest = 0xB;
     mctp_pktq_t tx_queue = {};
 
-    mctp_bus_t *bus = mctp_bus_create();
-    REQUIRE( bus != NULL );
+    test_env.bus = mctp_bus_create();
+    REQUIRE( test_env.bus != NULL );
 
-    mctp_serial_t *serial = mctp_serial_create();
-    REQUIRE( serial != NULL );
+    test_env.serial = mctp_serial_create();
+    REQUIRE( test_env.serial != NULL );
 
-    mctp_binding_t *binding = mctp_serial_get_binding(serial);
-    REQUIRE( binding != NULL );
+    test_env.binding = mctp_serial_get_binding(test_env.serial);
+    REQUIRE( test_env.binding != NULL );
 
-    mctp_bus_set_eid(bus, eid_source);
-    mctp_bus_transport_bind(bus, binding);
-    mctp_serial_set_buffer_tx(serial, serial_buffer_tx);
+    mctp_bus_set_eid(test_env.bus, eid_source);
+    mctp_bus_transport_bind(test_env.bus, test_env.binding);
+    mctp_serial_set_byte_tx(test_env.serial, serial_byte_tx);
 
     // Prepare request
     mctp_req_get_mctp_ver_t payload = {
@@ -108,7 +102,7 @@ TEST_CASE( "MCTP tx control request", "[tx]" ) {
     // Fill tx queue
     mctp_ctrl_request_prepare(
         &tx_queue,
-        bus,
+        test_env.bus,
         eid_dest,
         command,
         false,
@@ -117,9 +111,11 @@ TEST_CASE( "MCTP tx control request", "[tx]" ) {
     );
 
     // Drain tx queue
-    mctp_pktq_drain(&tx_queue, bus);
+    mctp_pktq_drain(&tx_queue, test_env.bus);
 
     // Clean up
-    mctp_bus_destroy(bus);
-    mctp_serial_destroy(serial);
+    mctp_bus_destroy(test_env.bus);
+    mctp_serial_destroy(test_env.serial);
+
+    memset(&test_env, 0, sizeof(test_env));
 }

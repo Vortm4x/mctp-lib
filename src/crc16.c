@@ -36,13 +36,18 @@ const uint16_t crc16_table[256] = {
 };
 
 
-uint16_t crc16_calc_byte(uint16_t crc, uint8_t byte)
-{
+uint16_t crc16_calc_byte(
+	uint16_t crc,
+	const uint8_t byte
+) {
     return (crc >> 8) ^ crc16_table[(crc ^ byte) & 0xFF];
 }
 
-uint16_t crc16_calc_block(uint16_t crc, uint8_t block[], size_t block_len)
-{
+uint16_t crc16_calc_block(
+	uint16_t crc,
+	const uint8_t block[],
+	const size_t block_len
+) {
     for(size_t i = 0; i < block_len; ++i)
     {
         crc = crc16_calc_byte(crc, block[i]);

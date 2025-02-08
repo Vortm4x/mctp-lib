@@ -25,15 +25,14 @@ typedef enum mctp_serial_rx_state_t
 mctp_serial_rx_state_t;
 
 
-typedef void (*mctp_serial_buffer_tx_t)(
-    const uint8_t buffer_data[],
-    const size_t buffer_len
+typedef void (*mctp_serial_byte_tx_t)(
+    const uint8_t byte
 );
 
 typedef struct
 {
     mctp_binding_t binding;
-    mctp_serial_buffer_tx_t buffer_tx;
+    mctp_serial_byte_tx_t byte_tx;
 
     struct
     {
@@ -47,29 +46,29 @@ typedef struct
 }
 mctp_serial_t;
 
-typedef struct __attribute__ ((__packed__))
+typedef union __attribute__ ((__packed__))
 {
-    uint8_t framing_flag;
-    uint8_t revision;
-    uint8_t byte_count;
+    struct __attribute__ ((__packed__))
+    {
+        uint8_t framing_flag;
+        uint8_t revision;
+        uint8_t byte_count;
+    };
+    uint8_t data[3];
 }
 mctp_serial_header_t;
 
-typedef struct __attribute__ ((__packed__))
+typedef union __attribute__ ((__packed__))
 {
-    uint8_t fcs_high;
-    uint8_t fcs_low;
-    uint8_t framing_flag;
+    struct __attribute__ ((__packed__))
+    {
+        uint8_t fcs_high;
+        uint8_t fcs_low;
+        uint8_t framing_flag;
+    };
+    uint8_t data[3];
 }
 mctp_serial_trailer_t;
-
-typedef struct
-{
-    mctp_serial_header_t *header;
-    uint8_t *packet;
-    mctp_serial_trailer_t *trailer;
-}
-mctp_serial_buffer_map_t;
 
 
 mctp_serial_t* mctp_serial_create();
@@ -78,19 +77,32 @@ void mctp_serial_destroy(
     mctp_serial_t *serial
 );
 
-void mctp_serial_set_buffer_tx(
+void mctp_serial_set_byte_tx(
     mctp_serial_t *serial,
-    mctp_serial_buffer_tx_t buffer_tx
+    mctp_serial_byte_tx_t byte_tx
 );
 
 mctp_binding_t *mctp_serial_get_binding(
     mctp_serial_t *serial
 );
 
-void mctp_serial_buffer_map_init(
-    mctp_serial_buffer_map_t *buffer_map,
-    uint8_t *buffer_data,
-    const size_t packet_len
+void mctp_serial_buffer_tx(
+    const mctp_serial_t *serial,
+    const uint8_t buffer_data[],
+    const size_t buffer_len
+);
+
+void mctp_serial_escaped_buffer_tx(
+    const mctp_serial_t *serial,
+    const uint8_t buffer_data[],
+    const size_t buffer_len
+);
+
+void mctp_serial_frame_tx(
+    const mctp_serial_t *serial,
+    const mctp_serial_header_t *header,
+	const mctp_packet_t *packet,
+    const mctp_serial_trailer_t *trailer
 );
 
 void mctp_serial_packet_tx(

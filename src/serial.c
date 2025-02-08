@@ -1,4 +1,5 @@
 #include <mctp/binding/serial.h>
+#include <mctp/core/mctp.h>
 #include <mctp/util/container_of.h>
 #include <mctp/util/crc16.h>
 #include <stdlib.h>
@@ -21,11 +22,11 @@ void mctp_serial_destroy(
     free(serial);
 }
 
-void mctp_serial_set_buffer_tx(
+void mctp_serial_set_byte_tx(
     mctp_serial_t *serial,
-    mctp_serial_buffer_tx_t buffer_tx
+    mctp_serial_byte_tx_t byte_tx
 ) {
-    serial->buffer_tx = buffer_tx;
+    serial->byte_tx = byte_tx;
 }
 
 mctp_binding_t *mctp_serial_get_binding(
@@ -34,50 +35,77 @@ mctp_binding_t *mctp_serial_get_binding(
     return &serial->binding;
 }
 
-void mctp_serial_buffer_map_init(
-    mctp_serial_buffer_map_t *buffer_map,
-    uint8_t *buffer_data,
-    const size_t packet_len
+void mctp_serial_buffer_tx(
+    const mctp_serial_t *serial,
+    const uint8_t buffer_data[],
+    const size_t buffer_len
 ) {
-    buffer_map->header = (mctp_serial_header_t *)buffer_data;
-    buffer_map->packet = (uint8_t *)(buffer_map->header + 1);
-    buffer_map->trailer = (mctp_serial_trailer_t *)(buffer_map->packet + packet_len);
+    for(size_t i = 0; i < buffer_len; ++i) 
+    {
+        serial->byte_tx(buffer_data[i]);
+    }
+}
+
+void mctp_serial_escaped_buffer_tx(
+    const mctp_serial_t *serial,
+    const uint8_t buffer_data[],
+    const size_t buffer_len
+) {
+    for(size_t i = 0; i < buffer_len; ++i) 
+    {
+        switch (buffer_data[i])
+        {
+            case MCTP_SERIAL_FRAME_FLAG:
+            case MCTP_SERIAL_ESCAPE_FLAG:
+                serial->byte_tx(MCTP_SERIAL_ESCAPE_FLAG);
+                serial->byte_tx(MCTP_SERIAL_ESCAPE_BYTE(buffer_data[i]));
+                break;
+
+            default:
+                serial->byte_tx(buffer_data[i]);
+                break;
+        }
+    }
+}
+
+void mctp_serial_frame_tx(
+    const mctp_serial_t *serial,
+    const mctp_serial_header_t *header,
+	const mctp_packet_t *packet,
+    const mctp_serial_trailer_t *trailer
+) {
+    mctp_serial_buffer_tx(serial, header->data, sizeof(header->data));
+    mctp_serial_escaped_buffer_tx(serial, packet->data, packet->len);
+    mctp_serial_buffer_tx(serial, trailer->data, sizeof(trailer->data));
 }
 
 void mctp_serial_packet_tx(
     const mctp_binding_t *binding,
 	const mctp_packet_t *packet
 ) {
-    const size_t buffer_len =
-        sizeof(mctp_serial_header_t) +
-        sizeof(mctp_serial_trailer_t) +
-        packet->len;
-
-    uint8_t buffer_data[buffer_len];
-    mctp_serial_buffer_map_t buffer_map = {};
-
-    mctp_serial_buffer_map_init(&buffer_map, buffer_data, packet->len);
-
-    buffer_map.header->framing_flag = MCTP_SERIAL_FRAME_FLAG;
-    buffer_map.header->revision = MCTP_SERIAL_REVISION;
-    buffer_map.header->byte_count = packet->len;
-
-    memcpy(buffer_map.packet, packet->data, packet->len);
+    const mctp_serial_header_t header = {
+        .framing_flag = MCTP_SERIAL_FRAME_FLAG,
+        .revision = MCTP_SERIAL_REVISION,
+        .byte_count = packet->len
+    };
 
     uint16_t crc = MCTP_CRC16_INIT;
-    crc = crc16_calc_byte(crc, buffer_map.header->revision);
-    crc = crc16_calc_byte(crc, buffer_map.header->byte_count);
-    crc = crc16_calc_block(crc, buffer_map.packet, packet->len);
 
-    buffer_map.trailer->fcs_high = MCTP_CRC16_GET_HIGH(crc);
-    buffer_map.trailer->fcs_low = MCTP_CRC16_GET_LOW(crc);
-    buffer_map.trailer->framing_flag = MCTP_SERIAL_FRAME_FLAG;
+    crc = crc16_calc_byte(crc, header.revision);
+    crc = crc16_calc_byte(crc, header.byte_count);
+    crc = crc16_calc_block(crc, packet->data, packet->len);
+
+    const mctp_serial_trailer_t trailer = {
+        .fcs_high = MCTP_CRC16_GET_HIGH(crc),
+        .fcs_low = MCTP_CRC16_GET_LOW(crc),
+        .framing_flag = MCTP_SERIAL_FRAME_FLAG
+    };
 
     const mctp_serial_t *serial = container_of(
         binding, mctp_serial_t, binding
     );
 
-    serial->buffer_tx(buffer_data, buffer_len);
+    mctp_serial_frame_tx(serial, &header, packet, &trailer);
 }
 
 void mctp_serial_reset_rx_ctx(
@@ -95,9 +123,13 @@ void mctp_serial_push_rx_data(
     serial->rx.packet.data[serial->rx.next_pkt_byte] = byte;
     serial->rx.next_pkt_byte++;
 
-    if(serial->rx.packet.len == serial->rx.next_pkt_byte)
+    if (serial->rx.packet.len == serial->rx.next_pkt_byte)
     {
         serial->rx.state = MCTP_SERIAL_RX_STATE_FCS_HIGH;
+    }
+    else
+    {
+        serial->rx.state = MCTP_SERIAL_RX_STATE_DATA;
     }
 }
 
@@ -113,7 +145,7 @@ void mctp_serial_byte_rx(
     {
         case MCTP_SERIAL_RX_STATE_SYNC_START:
         {
-            if(byte == MCTP_SERIAL_FRAME_FLAG)
+            if (byte == MCTP_SERIAL_FRAME_FLAG)
             {
                 serial->rx.fcs_calc = MCTP_CRC16_INIT;
                 serial->rx.state = MCTP_SERIAL_RX_STATE_REVISION;
@@ -141,7 +173,7 @@ void mctp_serial_byte_rx(
 
         case MCTP_SERIAL_RX_STATE_PKT_LEN:
         {
-            if(sizeof(serial->rx.packet.header) < byte && byte <= sizeof(serial->rx.packet.data))
+            if (sizeof(serial->rx.packet.header) < byte && byte <= sizeof(serial->rx.packet.data))
             {
                 serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
                 serial->rx.packet.len = byte;
@@ -171,9 +203,9 @@ void mctp_serial_byte_rx(
 
         case MCTP_SERIAL_RX_STATE_DATA:
         {
-            if(byte != MCTP_SERIAL_ESCAPE_FLAG)
+            if (byte != MCTP_SERIAL_ESCAPE_FLAG)
             {
-                mctp_serial_push_rx_data(serial, MCTP_SERIAL_ESCAPE_BYTE(byte));
+                mctp_serial_push_rx_data(serial, byte);
             }
             else
             {
@@ -198,9 +230,9 @@ void mctp_serial_byte_rx(
 
         case MCTP_SERIAL_RX_STATE_SYNC_END:
         {
-            if(byte == MCTP_SERIAL_FRAME_FLAG && serial->rx.fcs_calc == serial->rx.fcs_read)
+            if (byte == MCTP_SERIAL_FRAME_FLAG && serial->rx.fcs_calc == serial->rx.fcs_read)
             {
-                // TO DO: mctp_packet_rx
+                mctp_packet_rx(binding->bus, &serial->rx.packet);
             }
             
             mctp_serial_reset_rx_ctx(serial);
