@@ -27,4 +27,5 @@ void mctp_bus_transport_bind(
     mctp_binding_t *binding
 ) {
     bus->binding = binding;
+    binding->bus = bus;
 }

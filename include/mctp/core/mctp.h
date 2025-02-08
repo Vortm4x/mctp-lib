@@ -41,4 +41,9 @@ void mctp_packet_tx(
     const mctp_packet_t *packet
 );
 
+void mctp_packet_rx(
+    const mctp_bus_t *bus,
+    const mctp_packet_t *packet
+);
+
 #endif // _MCTP_CORE_MCTP_H_ 

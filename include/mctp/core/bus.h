@@ -4,7 +4,7 @@
 #include <mctp/core/base.h>
 #include <mctp/core/binding.h>
 
-typedef struct 
+typedef struct mctp_bus_t
 {
 	mctp_eid_t eid;
     mctp_binding_t *binding;

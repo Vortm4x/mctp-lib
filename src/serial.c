@@ -84,7 +84,21 @@ void mctp_serial_reset_rx_ctx(
     mctp_serial_t* serial
 ) {
     memset(&serial->rx, 0, sizeof(&serial->rx));
-    serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_SYNC_START;
+    serial->rx.state = MCTP_SERIAL_RX_STATE_SYNC_START;
+}
+
+void mctp_serial_push_rx_data(
+    mctp_serial_t *serial,
+	const uint8_t byte
+) {
+    serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
+    serial->rx.packet.data[serial->rx.next_pkt_byte] = byte;
+    serial->rx.next_pkt_byte++;
+
+    if(serial->rx.packet.len == serial->rx.next_pkt_byte)
+    {
+        serial->rx.state = MCTP_SERIAL_RX_STATE_FCS_HIGH;
+    }
 }
 
 void mctp_serial_byte_rx(
@@ -97,22 +111,22 @@ void mctp_serial_byte_rx(
 
     switch(serial->rx.state)
     {
-        case MCTP_SERIAL_RX_STATE_WAIT_SYNC_START:
+        case MCTP_SERIAL_RX_STATE_SYNC_START:
         {
             if(byte == MCTP_SERIAL_FRAME_FLAG)
             {
                 serial->rx.fcs_calc = MCTP_CRC16_INIT;
-                serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_REVISION;
+                serial->rx.state = MCTP_SERIAL_RX_STATE_REVISION;
             }
         }
         break;
 
-        case MCTP_SERIAL_RX_STATE_WAIT_REVISION:
+        case MCTP_SERIAL_RX_STATE_REVISION:
         {
             switch (byte) {
                 case MCTP_SERIAL_REVISION:
                     serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
-                    serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_LEN;
+                    serial->rx.state = MCTP_SERIAL_RX_STATE_PKT_LEN;
                 break;
             
                 case MCTP_SERIAL_FRAME_FLAG:
@@ -125,7 +139,7 @@ void mctp_serial_byte_rx(
         }
         break;
 
-        case MCTP_SERIAL_RX_STATE_WAIT_LEN:
+        case MCTP_SERIAL_RX_STATE_PKT_LEN:
         {
             if(sizeof(serial->rx.packet.header) < byte && byte <= sizeof(serial->rx.packet.data))
             {
@@ -141,34 +155,48 @@ void mctp_serial_byte_rx(
         }
         break;
 
-        case MCTP_SERIAL_RX_STATE_DATA:
+        case MCTP_SERIAL_RX_STATE_ESCAPE:
         {
-            serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
-            serial->rx.packet.data[serial->rx.next_pkt_byte] = byte;
-            serial->rx.next_pkt_byte++;
-
-            if(serial->rx.packet.len == serial->rx.next_pkt_byte)
-            {
-                serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_FCS_HIGH;
+            switch (MCTP_SERIAL_ESCAPE_BYTE(byte)) {
+                case MCTP_SERIAL_ESCAPE_FLAG:
+                case MCTP_SERIAL_FRAME_FLAG:
+                    mctp_serial_push_rx_data(serial, MCTP_SERIAL_ESCAPE_BYTE(byte));
+                    break;
+                default:
+                    mctp_serial_reset_rx_ctx(serial);
+                    break;
             }
         }
         break;
 
-        case MCTP_SERIAL_RX_STATE_WAIT_FCS_HIGH:
+        case MCTP_SERIAL_RX_STATE_DATA:
+        {
+            if(byte != MCTP_SERIAL_ESCAPE_FLAG)
+            {
+                mctp_serial_push_rx_data(serial, MCTP_SERIAL_ESCAPE_BYTE(byte));
+            }
+            else
+            {
+                serial->rx.state = MCTP_SERIAL_RX_STATE_ESCAPE;
+            }
+        }
+        break;
+
+        case MCTP_SERIAL_RX_STATE_FCS_HIGH:
         {
             MCTP_CRC16_SET_HIGH(serial->rx.fcs_read, byte);
-            serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_FCS_LOW;
+            serial->rx.state = MCTP_SERIAL_RX_STATE_FCS_LOW;
         }
         break;
 
-        case MCTP_SERIAL_RX_STATE_WAIT_FCS_LOW:
+        case MCTP_SERIAL_RX_STATE_FCS_LOW:
         {
             MCTP_CRC16_SET_LOW(serial->rx.fcs_read, byte);
-            serial->rx.state = MCTP_SERIAL_RX_STATE_WAIT_SYNC_END;
+            serial->rx.state = MCTP_SERIAL_RX_STATE_SYNC_END;
         }
         break;
 
-        case MCTP_SERIAL_RX_STATE_WAIT_SYNC_END:
+        case MCTP_SERIAL_RX_STATE_SYNC_END:
         {
             if(byte == MCTP_SERIAL_FRAME_FLAG && serial->rx.fcs_calc == serial->rx.fcs_read)
             {

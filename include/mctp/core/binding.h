@@ -6,6 +6,7 @@
 
 
 struct mctp_binding_t;
+struct mctp_bus_t;
 
 typedef void (*mctp_binding_packet_tx_t)(
     const struct mctp_binding_t *binding,
@@ -16,6 +17,7 @@ typedef struct mctp_binding_t
 {
     mctp_binding_packet_tx_t packet_tx;
     mctp_binding_type_t type;
+    struct mctp_bus_t *bus;
 }
 mctp_binding_t;
 

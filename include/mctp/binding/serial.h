@@ -6,17 +6,21 @@
 
 #define MCTP_SERIAL_REVISION        0x01
 #define MCTP_SERIAL_FRAME_FLAG      0x7E
+#define MCTP_SERIAL_ESCAPE_FLAG     0x7D
+
+#define MCTP_SERIAL_ESCAPE_BYTE(byte) (byte ^ 0x20)
 
 
 typedef enum mctp_serial_rx_state_t
 {
-    MCTP_SERIAL_RX_STATE_WAIT_SYNC_START,
-	MCTP_SERIAL_RX_STATE_WAIT_REVISION,
-    MCTP_SERIAL_RX_STATE_WAIT_LEN,
+    MCTP_SERIAL_RX_STATE_SYNC_START,
+	MCTP_SERIAL_RX_STATE_REVISION,
+    MCTP_SERIAL_RX_STATE_PKT_LEN,
 	MCTP_SERIAL_RX_STATE_DATA,
-	MCTP_SERIAL_RX_STATE_WAIT_FCS_HIGH,
-	MCTP_SERIAL_RX_STATE_WAIT_FCS_LOW,
-	MCTP_SERIAL_RX_STATE_WAIT_SYNC_END,
+	MCTP_SERIAL_RX_STATE_ESCAPE,
+	MCTP_SERIAL_RX_STATE_FCS_HIGH,
+	MCTP_SERIAL_RX_STATE_FCS_LOW,
+	MCTP_SERIAL_RX_STATE_SYNC_END,
 }
 mctp_serial_rx_state_t;
 
@@ -96,6 +100,11 @@ void mctp_serial_packet_tx(
 
 void mctp_serial_reset_rx_ctx(
     mctp_serial_t* serial
+);
+
+void mctp_serial_push_rx_data(
+    mctp_serial_t *serial,
+	const uint8_t byte
 );
 
 void mctp_serial_byte_rx(

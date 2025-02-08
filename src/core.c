@@ -84,3 +84,10 @@ void mctp_packet_tx(
 
     binding->packet_tx(binding, packet);
 }
+
+void mctp_packet_rx(
+    const mctp_bus_t *bus,
+    const mctp_packet_t *packet
+) {
+    // TO DO: implement
+}
