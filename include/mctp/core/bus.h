@@ -3,11 +3,20 @@
 
 #include <mctp/core/base.h>
 #include <mctp/core/binding.h>
+#include <mctp/core/packet_queue.h>
+#include <mctp/core/message_queue.h>
+
 
 typedef struct mctp_bus_t
 {
 	mctp_eid_t eid;
     mctp_binding_t *binding;
+    struct
+    {
+        mctp_pktq_t packet_queue;
+        mctp_msgq_t message_queue;
+    }
+    rx;
 }
 mctp_bus_t;
 
@@ -27,5 +36,6 @@ void mctp_bus_transport_bind(
     mctp_bus_t *bus,
     mctp_binding_t *binding
 );
+
 
 #endif // _MCTP_CORE_BUS_H_

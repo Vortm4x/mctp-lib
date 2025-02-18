@@ -16,6 +16,7 @@ add_library (${PROJECT_NAME} STATIC
     src/bus.c
     src/packet.c
     src/packet_queue.c
+    src/message_queue.c
     src/crc16.c
 )
 
@@ -24,5 +25,7 @@ target_include_directories (${PROJECT_NAME}
 )
 
 include(CTest)
+
+target_link_libraries(mctp PUBLIC gcov)
 
 add_subdirectory(test)

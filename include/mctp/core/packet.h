@@ -40,8 +40,18 @@ mctp_packet_t *mctp_pkt_create(
     const size_t payload_len
 );
 
+mctp_packet_t *mctp_pkt_clone(
+    const mctp_packet_t *packet
+);
+
 void mctp_pkt_destroy(
     mctp_packet_t *packet
 );
+
+bool mctp_pkt_message_match(
+    const mctp_packet_t *packet,
+    const mctp_msg_ctx_t *message_ctx
+);
+
 
 #endif // _MCTP_CORE_PACKET_H_

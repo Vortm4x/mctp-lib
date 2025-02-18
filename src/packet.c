@@ -16,8 +16,28 @@ mctp_packet_t *mctp_pkt_create(
     return packet;
 }
 
+mctp_packet_t *mctp_pkt_clone(
+    const mctp_packet_t *packet
+) {
+    mctp_packet_t *duplicate = (mctp_packet_t *)calloc(1, sizeof(mctp_packet_t));
+
+    memcpy(duplicate, packet, sizeof(mctp_packet_t));
+
+    return duplicate;
+}
+
 void mctp_pkt_destroy(
     mctp_packet_t *packet
 ) {
     free(packet);
+}
+
+bool mctp_pkt_message_match(
+    const mctp_packet_t *packet,
+    const mctp_msg_ctx_t *message_ctx
+) {
+    return
+        packet->header.source == message_ctx->eid &&
+        packet->header.tag == message_ctx->tag &&
+        packet->header.tag_owner == message_ctx->tag_owner;
 }

@@ -43,4 +43,12 @@ typedef union __attribute__ ((__packed__))
 }
 mctp_ver_t;
 
+typedef struct
+{
+    mctp_eid_t eid;
+    uint8_t tag     : 3;
+    bool tag_owner  : 1;
+}
+mctp_msg_ctx_t;
+
 #endif // _MCTP_CORE_BASE_H_ 

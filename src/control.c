@@ -27,7 +27,7 @@ void mctp_ctrl_request_prepare(
 
     const mctp_msg_ctx_t message_ctx = {
         .eid = dest,
-        .message_tag = mctp_get_message_tag(),
+        .tag = mctp_get_message_tag(),
         .tag_owner = true
     };
 

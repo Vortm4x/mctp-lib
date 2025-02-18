@@ -20,7 +20,7 @@ void mctp_message_disassemble(
         .version = MCTP_PKT_HDR_VER,
         .dest = message_ctx->eid,
         .source = bus->eid,
-        .tag = message_ctx->message_tag,
+        .tag = message_ctx->tag,
         .tag_owner = message_ctx->tag_owner,
     };
 
@@ -69,7 +69,7 @@ void mctp_pktq_tx(
 
     while (node != NULL)
     {
-        mctp_packet_t *packet = mctp_pktq_node_pkt(node);
+        mctp_packet_t *packet = mctp_pktq_node_value(node);
 
         mctp_packet_tx(bus, packet);
         node = mctp_pktq_node_next(node);
@@ -86,8 +86,52 @@ void mctp_packet_tx(
 }
 
 void mctp_packet_rx(
-    const mctp_bus_t *bus,
+    mctp_bus_t *bus,
     const mctp_packet_t *packet
 ) {
-    // TO DO: implement
+    mctp_packet_t *rx_packet = mctp_pkt_clone(packet);
+
+    mctp_pktq_enqueue(&bus->rx.packet_queue, rx_packet);
+
+    if(rx_packet->header.eom)
+    {
+        mctp_msg_ctx_t message_ctx = {
+            .eid = rx_packet->header.source,
+            .tag = rx_packet->header.tag,
+            .tag_owner = rx_packet->header.tag_owner
+        };
+
+        mctp_msgq_enqueue(
+            &bus->rx.message_queue,
+            message_ctx
+        );
+    }
+}
+
+void mctp_pktq_rx(
+    mctp_bus_t *bus,
+    mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *message_ctx
+) {
+    mctp_pktq_t temp_queue = {};
+
+    while (!mctp_pktq_empty(&bus->rx.packet_queue))
+    {
+        mctp_packet_t *curr = mctp_pktq_dequeue(&bus->rx.packet_queue);
+
+        if(mctp_pkt_message_match(curr, message_ctx))
+        {
+            mctp_pktq_enqueue(rx_queue, curr);
+        }
+        else
+        {
+            mctp_pktq_enqueue(&temp_queue, curr);
+        }
+    }
+
+    if(!mctp_pktq_empty(&temp_queue))
+    {
+        temp_queue.rear->next = bus->rx.packet_queue.front;
+        bus->rx.packet_queue.front = temp_queue.front;
+    }
 }

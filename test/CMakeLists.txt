@@ -18,5 +18,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Catch2::Catch2WithMain
 )
 
+target_compile_options(mctp PRIVATE
+    "-fprofile-arcs"
+    "-ftest-coverage"
+)
+
+
 include(CTest)
 catch_discover_tests(${PROJECT_NAME})
