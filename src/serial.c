@@ -173,7 +173,7 @@ void mctp_serial_byte_rx(
 
         case MCTP_SERIAL_RX_STATE_PKT_LEN:
         {
-            if (sizeof(serial->rx.packet.header) < byte && byte <= sizeof(serial->rx.packet.data))
+            if (MCTP_PKT_HDR_SIZE < byte && byte <= MCTP_PKT_MAX_SIZE)
             {
                 serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
                 serial->rx.packet.len = byte;

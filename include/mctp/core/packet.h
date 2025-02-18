@@ -17,6 +17,8 @@ typedef struct __attribute__ ((__packed__))
 }
 mctp_transport_header_t;
 
+#define MCTP_PKT_HDR_SIZE (sizeof(mctp_transport_header_t))
+#define MCTP_PKT_MAX_SIZE (MCTP_PKT_HDR_SIZE + MCTP_BASE_MTU)
 
 typedef struct
 {
@@ -27,7 +29,7 @@ typedef struct
             mctp_transport_header_t header;
             uint8_t payload[MCTP_BASE_MTU];
         };
-        uint8_t data[sizeof(mctp_transport_header_t) + MCTP_BASE_MTU];
+        uint8_t data[MCTP_PKT_MAX_SIZE];
     };
     size_t len;
 }
