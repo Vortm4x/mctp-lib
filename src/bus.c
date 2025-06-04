@@ -1,10 +1,11 @@
 #include <mctp/core/bus.h>
+#include <mctp/util/alloc.h>
 #include <stdlib.h>
 
 
 mctp_bus_t *mctp_bus_create() 
 {
-    mctp_bus_t *bus = (mctp_bus_t *)calloc(1, sizeof(mctp_bus_t));
+    mctp_bus_t *bus = _alloc(mctp_bus_t);
 
     return bus;
 }

@@ -2,13 +2,14 @@
 #include <mctp/core/mctp.h>
 #include <mctp/util/container_of.h>
 #include <mctp/util/crc16.h>
+#include <mctp/util/alloc.h>
 #include <stdlib.h>
 #include <string.h>
 
 
 mctp_serial_t* mctp_serial_create()
 {
-    mctp_serial_t *serial = (mctp_serial_t *)calloc(1, sizeof(mctp_serial_t));
+    mctp_serial_t *serial = _alloc(mctp_serial_t);
 
     serial->binding.type = MCTP_BINDING_TYPE_SERIAL;
     serial->binding.packet_tx = mctp_serial_packet_tx;
