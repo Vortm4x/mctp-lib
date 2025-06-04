@@ -9,7 +9,11 @@ set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 add_executable(${PROJECT_NAME}
-    serial_byte_rx_single_pkt.cpp
+# SERIAL
+    unit/serial/single-pkt-rx.cpp
+# CORE
+    unit/core/control-msg-tx.cpp
+    unit/core/raw-msg-tx.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

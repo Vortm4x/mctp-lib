@@ -58,6 +58,10 @@ bool mctp_pkt_message_match(
     const mctp_msg_ctx_t *message_ctx
 );
 
+void mctp_pkt_header_dump(
+    const mctp_transport_header_t *header
+);
+
 EXTERN_C_END
 
 #endif // _MCTP_CORE_PACKET_H_

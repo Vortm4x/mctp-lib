@@ -51,6 +51,7 @@ TEST_CASE( "serial-byte-rx-pkt" ) {
         .revision = MCTP_SERIAL_REVISION,
         .byte_count = PKT_SIZE
     };
+    mctp_serial_header_dump(&header);
 
     static uint16_t crc = 0;
 
@@ -64,6 +65,7 @@ TEST_CASE( "serial-byte-rx-pkt" ) {
         .fcs_low = MCTP_CRC16_GET_LOW(crc),
         .framing_flag = MCTP_SERIAL_FRAME_FLAG,
     };
+    mctp_serial_trailer_dump(&trailer);
 
     // Rx frame
     serial_buff_rx(binding, (uint8_t *)&header, sizeof(header));
