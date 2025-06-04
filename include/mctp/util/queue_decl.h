@@ -1,11 +1,16 @@
 #ifndef _MCTP_UTIL_QUEUE_DECL_H_
 #define _MCTP_UTIL_QUEUE_DECL_H_
 
+#include <mctp/util/extern_c.h>
+
+
 #define _queue_t(q_x) q_x##_t
 #define _queue_node_t(q_x) q_x##_node_t
 #define _queue_method(q_x, method) q_x##_##method
 
 #define _queue_type_decl(q_x, value_t)                      \
+                                                            \
+    EXTERN_C_BEGIN                                          \
                                                             \
     typedef struct _queue_node_t(q_x)                       \
     {                                                       \
@@ -56,6 +61,8 @@
                                                             \
     _queue_node_t(q_x) *_queue_method(q_x, clear)(          \
         _queue_t(q_x) *queue                                \
-    );
+    );                                                      \
+                                                            \
+    EXTERN_C_END
 
 #endif // _MCTP_UTIL_QUEUE_DECL_H_

@@ -1,11 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <string.h>
 
-extern "C" {
-    #include <mctp/binding/serial.h>
-    #include <mctp/core/bus.h>
-    #include <mctp/util/crc16.h>
-}
+#include <mctp/binding/serial.h>
+#include <mctp/core/bus.h>
+#include <mctp/util/crc16.h>
 
 void serial_buff_rx(
     const mctp_binding_t *binding,

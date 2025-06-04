@@ -2,6 +2,7 @@
 #define _MCTP_CORE_PACKET_H_
 
 #include <mctp/core/base.h>
+#include <mctp/util/extern_c.h>
 
 typedef struct __attribute__ ((__packed__))
 {
@@ -36,6 +37,8 @@ typedef struct
 mctp_packet_t;
 
 
+EXTERN_C_BEGIN
+
 mctp_packet_t *mctp_pkt_create(
     const mctp_transport_header_t *header,
     const uint8_t payload_data[],
@@ -55,5 +58,6 @@ bool mctp_pkt_message_match(
     const mctp_msg_ctx_t *message_ctx
 );
 
+EXTERN_C_END
 
 #endif // _MCTP_CORE_PACKET_H_
