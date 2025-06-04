@@ -5,6 +5,7 @@
 #include <mctp/control/response.h>
 #include <mctp/core/base.h>
 #include <mctp/core/mctp.h>
+#include <mctp/util/extern_c.h>
 
 
 typedef enum __attribute__ ((__packed__))
@@ -59,6 +60,8 @@ typedef struct __attribute__ ((__packed__))
 mctp_ctrl_header_t;
 
 
+EXTERN_C_BEGIN
+
 void mctp_ctrl_request_prepare(
     mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
@@ -77,5 +80,7 @@ void mctp_ctrl_message_prepare(
     const uint8_t payload_data[],
     const size_t payload_len
 );
+
+EXTERN_C_END
 
 #endif // _MCTP_CONTROL_MESSAGE_H_

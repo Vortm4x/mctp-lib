@@ -2,11 +2,9 @@
 #include <stdio.h>
 #include "dump.hpp"
 
-extern "C" {
-    #include <mctp/control/message.h>
-    #include <mctp/binding/serial.h>
-    #include <mctp/core/bus.h>
-}
+#include <mctp/control/message.h>
+#include <mctp/binding/serial.h>
+#include <mctp/core/bus.h>
 
 
 struct

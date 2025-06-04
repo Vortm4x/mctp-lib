@@ -5,6 +5,7 @@
 #include <mctp/core/binding.h>
 #include <mctp/core/packet_queue.h>
 #include <mctp/core/message_queue.h>
+#include <mctp/util/extern_c.h>
 
 
 typedef struct mctp_bus_t
@@ -20,6 +21,8 @@ typedef struct mctp_bus_t
 }
 mctp_bus_t;
 
+
+EXTERN_C_BEGIN
 
 mctp_bus_t *mctp_bus_create();
 
@@ -37,5 +40,6 @@ void mctp_bus_transport_bind(
     mctp_binding_t *binding
 );
 
+EXTERN_C_END
 
 #endif // _MCTP_CORE_BUS_H_

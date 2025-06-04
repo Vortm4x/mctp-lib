@@ -3,6 +3,7 @@
 
 #include <mctp/core/binding.h>
 #include <mctp/core/packet.h>
+#include <mctp/util/extern_c.h>
 
 #define MCTP_SERIAL_REVISION        0x01
 #define MCTP_SERIAL_FRAME_FLAG      0x7E
@@ -71,6 +72,8 @@ typedef union __attribute__ ((__packed__))
 mctp_serial_trailer_t;
 
 
+EXTERN_C_BEGIN
+
 mctp_serial_t* mctp_serial_create();
 
 void mctp_serial_destroy(
@@ -123,5 +126,7 @@ void mctp_serial_byte_rx(
     const mctp_binding_t *binding,
 	const uint8_t byte
 );
+
+EXTERN_C_END
 
 #endif // _MCTP_BINDING_SERIAL_H_
