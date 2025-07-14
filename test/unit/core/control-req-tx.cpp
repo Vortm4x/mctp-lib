@@ -1,17 +1,23 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <mctp/control/message.h>
+#include <mctp/control/request.h>
 #include <mctp/core/bus.h>
 
 
 constexpr mctp_eid_t TEST_EID_SOURCE    = 0xA;
 constexpr mctp_eid_t TEST_EID_DEST      = 0xB;
+
 constexpr size_t TEST_PKT_PAYLOAD_LEN   = MCTP_BASE_MTU;
+constexpr size_t TEST_REQ_PAYLOAD_LEN   = TEST_PKT_PAYLOAD_LEN - MCTP_CTRL_HDR_SIZE;
 
 constexpr uint8_t TEST_PKT_SEQ = 0;
 constexpr uint8_t TEST_MSG_TAG = 0;
+constexpr uint8_t TEST_MSG_INST = 0;
+constexpr bool TEST_NOT_DATAGRAM  = false;
 
-constexpr uint8_t TEST_PKT_PAYLOAD_DATA[TEST_PKT_PAYLOAD_LEN] = {
+constexpr mctp_ctrl_cmd_t TEST_CTRL_CMD = (mctp_ctrl_cmd_t)0;
+constexpr uint8_t TEST_REQ_PAYLOAD_DATA[TEST_REQ_PAYLOAD_LEN] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -19,8 +25,21 @@ constexpr uint8_t TEST_PKT_PAYLOAD_DATA[TEST_PKT_PAYLOAD_LEN] = {
     0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
     0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
     0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 
-    0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F
+    0x38, 0x39, 0x3A, 0x3B, 0x3C
 };
+
+
+MCTP_CTRL_REQ_LAYOUT(
+    uint8_t data[TEST_REQ_PAYLOAD_LEN];
+)
+ctrl_req_payload_mock_t;
+
+typedef struct __attribute__ ((__packed__))
+{
+    mctp_ctrl_header_t header;
+    ctrl_req_payload_mock_t payload;
+}
+ctrl_req_mock_t;
 
 
 static void fake_binding_packet_tx(
@@ -42,11 +61,23 @@ static void fake_binding_packet_tx(
     REQUIRE(hdr->tag_owner  == true);
     REQUIRE(hdr->tag        == TEST_MSG_TAG);
 
-    REQUIRE(memcmp(packet->payload, TEST_PKT_PAYLOAD_DATA, payload_len) == 0);
+    const ctrl_req_mock_t *req = (const ctrl_req_mock_t *)packet->payload;
+
+    mctp_generic_header_dump(&req->header.base);
+    REQUIRE(req->header.base.integrity_check    == false);
+    REQUIRE(req->header.base.type               == MCTP_MSG_TYPE_CONTROL);
+
+    mctp_ctrl_header_dump(&req->header);
+    REQUIRE(req->header.command     == TEST_CTRL_CMD);
+    REQUIRE(req->header.request     == true);
+    REQUIRE(req->header.datagram    == TEST_NOT_DATAGRAM);
+    REQUIRE(req->header.instance    == TEST_MSG_INST);
+    
+    REQUIRE(memcmp(req->payload.data, TEST_REQ_PAYLOAD_DATA, TEST_REQ_PAYLOAD_LEN) == 0);
 }
 
 
-TEST_CASE( "MCTP raw message tx", "[tx]" ) {
+TEST_CASE( "MCTP Control req tx", "[tx]" ) {
     mctp_bus_t *bus = NULL;
     mctp_pktq_t tx_queue = {};
     mctp_binding_t fake_binding = {
@@ -59,20 +90,15 @@ TEST_CASE( "MCTP raw message tx", "[tx]" ) {
     mctp_bus_set_eid(bus, TEST_EID_SOURCE);
     mctp_bus_transport_bind(bus, &fake_binding);
 
-    // Message setup
-    const mctp_msg_ctx_t message_ctx = {
-        .eid = TEST_EID_DEST,
-        .tag = mctp_get_message_tag(),
-        .tag_owner = true
-    };
-
     // Fill tx queue
-    mctp_message_disassemble(
+    mctp_ctrl_request_prepare(
         &tx_queue,
         bus,
-        &message_ctx,
-        TEST_PKT_PAYLOAD_DATA,
-        TEST_PKT_PAYLOAD_LEN
+        TEST_EID_DEST,
+        TEST_CTRL_CMD,
+        TEST_NOT_DATAGRAM,
+        TEST_REQ_PAYLOAD_DATA,
+        TEST_REQ_PAYLOAD_LEN
     );
 
     // Drain tx queue

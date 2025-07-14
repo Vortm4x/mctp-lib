@@ -53,6 +53,10 @@ void mctp_pkt_destroy(
     mctp_packet_t *packet
 );
 
+size_t mctp_pkt_payload_len(
+    const mctp_packet_t *packet
+);
+
 bool mctp_pkt_message_match(
     const mctp_packet_t *packet,
     const mctp_msg_ctx_t *message_ctx
