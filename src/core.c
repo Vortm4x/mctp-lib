@@ -24,7 +24,9 @@ void mctp_message_disassemble(
         .tag_owner = message_ctx->tag_owner,
     };
 
-    const size_t packet_count = (message_len / MCTP_BASE_MTU) + 1;
+    const size_t packet_count = 
+        (message_len / MCTP_BASE_MTU) +
+        (message_len % MCTP_BASE_MTU ? 1 : 0);
 
     for(size_t i = 0; i < packet_count; ++i)
     {
@@ -134,4 +136,12 @@ void mctp_pktq_rx(
         temp_queue.rear->next = bus->rx.packet_queue.front;
         bus->rx.packet_queue.front = temp_queue.front;
     }
+}
+
+void mctp_generic_header_dump(
+    const mctp_generic_header_t *header
+) {
+    printf("MCTP Generic header\n");
+    printf("integrity_check:    %s\n",      header->integrity_check ? "YES" : "NO");
+    printf("type:               0x%02X\n",  header->type);
 }

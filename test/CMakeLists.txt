@@ -12,7 +12,7 @@ add_executable(${PROJECT_NAME}
 # SERIAL
     unit/serial/single-pkt-rx.cpp
 # CORE
-    unit/core/control-msg-tx.cpp
+    unit/core/control-req-tx.cpp
     unit/core/raw-msg-tx.cpp
 )
 

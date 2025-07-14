@@ -59,6 +59,8 @@ typedef struct __attribute__ ((__packed__))
 }
 mctp_ctrl_header_t;
 
+#define MCTP_CTRL_HDR_SIZE (sizeof(mctp_ctrl_header_t))
+
 
 EXTERN_C_BEGIN
 
@@ -79,6 +81,10 @@ void mctp_ctrl_message_prepare(
     const mctp_ctrl_header_t *header,
     const uint8_t payload_data[],
     const size_t payload_len
+);
+
+void mctp_ctrl_header_dump(
+    const mctp_ctrl_header_t *header
 );
 
 EXTERN_C_END

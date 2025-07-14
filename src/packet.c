@@ -34,6 +34,16 @@ void mctp_pkt_destroy(
     free(packet);
 }
 
+size_t mctp_pkt_payload_len(
+    const mctp_packet_t *packet
+) {
+    if (packet->len < MCTP_PKT_HDR_SIZE) {
+        return 0;
+    }
+    
+    return (packet->len - MCTP_PKT_HDR_SIZE);
+}
+
 bool mctp_pkt_message_match(
     const mctp_packet_t *packet,
     const mctp_msg_ctx_t *message_ctx
