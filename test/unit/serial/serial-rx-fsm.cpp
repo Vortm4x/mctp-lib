@@ -19,11 +19,11 @@ union                                   \
 }
 
 
-constexpr mctp_eid_t TEST_EID_SOURCE = 0xA;
-constexpr uint8_t TEST_RANDOM_BYTE = 0x89;
-constexpr uint8_t TEST_PKT_PAYLOAD_SIZE = 3;
-constexpr uint8_t TEST_PKT_HEADERS_SIZE = MCTP_PKT_MIN_SIZE;
-constexpr uint8_t TEST_BYTE_COUNT = TEST_PKT_HEADERS_SIZE + TEST_PKT_PAYLOAD_SIZE;
+constexpr mctp_eid_t TEST_EID_SOURCE        = 0xA;
+constexpr uint8_t TEST_RANDOM_BYTE          = 0x89;
+constexpr uint8_t TEST_PKT_PAYLOAD_SIZE     = 3;
+constexpr uint8_t TEST_PKT_HEADERS_SIZE     = MCTP_PKT_MIN_SIZE;
+constexpr uint8_t TEST_BYTE_COUNT           = TEST_PKT_HEADERS_SIZE + TEST_PKT_PAYLOAD_SIZE;
 constexpr uint8_t TEST_ESCAPED_PAYLOAD_SIZE = TEST_PKT_PAYLOAD_SIZE + 2;
 
 

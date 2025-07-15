@@ -27,15 +27,15 @@ constexpr uint8_t TEST_REQ_PAYLOAD_DATA[TEST_REQ_PAYLOAD_LEN] = {
 };
 
 
-MCTP_CTRL_REQ_LAYOUT(
-    uint8_t data[TEST_REQ_PAYLOAD_LEN];
-)
-ctrl_req_payload_mock_t;
-
 typedef struct __attribute__ ((__packed__))
 {
     mctp_ctrl_header_t header;
-    ctrl_req_payload_mock_t payload;
+
+    MCTP_CTRL_REQ_LAYOUT
+    (
+        uint8_t data[TEST_REQ_PAYLOAD_LEN];
+    )
+    payload;
 }
 ctrl_req_mock_t;
 
