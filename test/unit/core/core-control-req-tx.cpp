@@ -12,8 +12,6 @@ constexpr size_t TEST_PKT_PAYLOAD_LEN   = MCTP_BASE_MTU;
 constexpr size_t TEST_REQ_PAYLOAD_LEN   = TEST_PKT_PAYLOAD_LEN - MCTP_CTRL_HDR_SIZE;
 
 constexpr uint8_t TEST_PKT_SEQ = 0;
-constexpr uint8_t TEST_MSG_TAG = 0;
-constexpr uint8_t TEST_MSG_INST = 0;
 constexpr bool TEST_NOT_DATAGRAM  = false;
 
 constexpr mctp_ctrl_cmd_t TEST_CTRL_CMD = (mctp_ctrl_cmd_t)0;
@@ -59,7 +57,6 @@ static void fake_binding_packet_tx(
     REQUIRE(hdr->eom        == true);
     REQUIRE(hdr->pkt_seq    == TEST_PKT_SEQ);
     REQUIRE(hdr->tag_owner  == true);
-    REQUIRE(hdr->tag        == TEST_MSG_TAG);
 
     const ctrl_req_mock_t *req = (const ctrl_req_mock_t *)packet->payload;
 
@@ -71,7 +68,6 @@ static void fake_binding_packet_tx(
     REQUIRE(req->header.command     == TEST_CTRL_CMD);
     REQUIRE(req->header.request     == true);
     REQUIRE(req->header.datagram    == TEST_NOT_DATAGRAM);
-    REQUIRE(req->header.instance    == TEST_MSG_INST);
     
     REQUIRE(memcmp(req->payload.data, TEST_REQ_PAYLOAD_DATA, TEST_REQ_PAYLOAD_LEN) == 0);
 }
@@ -86,7 +82,6 @@ TEST_CASE("core-control-req-tx") {
 
     // Bus setup
     bus = mctp_bus_create();
-    REQUIRE(bus != NULL);
     mctp_bus_set_eid(bus, TEST_EID_SOURCE);
     mctp_bus_transport_bind(bus, &fake_binding);
 

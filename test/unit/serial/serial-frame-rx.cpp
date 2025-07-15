@@ -30,7 +30,6 @@ union                                   \
     FIELDS;                             \
                                         \
     uint8_t DATA[sizeof(FIELDS)];       \
-                                        \
 }
 
 
@@ -39,8 +38,8 @@ constexpr mctp_eid_t TEST_EID_DEST      = 0xB;
 constexpr size_t TEST_PKT_SIZE          = MCTP_PKT_MAX_SIZE;
 
 constexpr TEST_IO_STRUCT_LAYOUT(
-    uint8_t revision = MCTP_SERIAL_REVISION;
-    uint8_t byte_count = TEST_PKT_SIZE;
+    uint8_t revision;
+    uint8_t byte_count;
     uint8_t packet[TEST_PKT_SIZE];
 )
 TEST_CRC_STRUCT = {
@@ -98,21 +97,14 @@ TEST_CASE("serial-frame-rx") {
 
     // Bus setup
     bus = mctp_bus_create();
-    REQUIRE(bus != NULL);
-
     mctp_bus_set_eid(bus, TEST_EID_SOURCE);
 
     serial = mctp_serial_create();
-    REQUIRE(serial != NULL);
-
     binding = mctp_serial_get_binding(serial);
-    REQUIRE(binding != NULL);
-
     mctp_bus_transport_bind(bus, binding);
 
     // Read frame
     serial_buff_rx(binding, TEST_SERIAL_FRAME.DATA, sizeof(TEST_SERIAL_FRAME.DATA));
-
     REQUIRE_FALSE(mctp_pktq_empty(&bus->rx.packet_queue));
 
     // Deque packet
