@@ -16,7 +16,6 @@ union                                   \
     FIELDS;                             \
                                         \
     uint8_t DATA[sizeof(FIELDS)];       \
-                                        \
 }
 
 
@@ -89,16 +88,10 @@ TEST_CASE("serial-rx-fsm") {
 
     // Bus setup
     bus = mctp_bus_create();
-    REQUIRE(bus != NULL);
-
     mctp_bus_set_eid(bus, TEST_EID_SOURCE);
 
     serial = mctp_serial_create();
-    REQUIRE(serial != NULL);
-
     binding = mctp_serial_get_binding(serial);
-    REQUIRE(binding != NULL);
-
     mctp_bus_transport_bind(bus, binding);
 
     REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);

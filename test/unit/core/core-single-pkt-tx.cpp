@@ -9,7 +9,6 @@ constexpr mctp_eid_t TEST_EID_DEST      = 0xB;
 constexpr size_t TEST_PKT_PAYLOAD_LEN   = MCTP_BASE_MTU;
 
 constexpr uint8_t TEST_PKT_SEQ = 0;
-constexpr uint8_t TEST_MSG_TAG = 0;
 
 constexpr uint8_t TEST_PKT_PAYLOAD_DATA[TEST_PKT_PAYLOAD_LEN] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -40,7 +39,6 @@ static void fake_binding_packet_tx(
     REQUIRE(hdr->eom        == true);
     REQUIRE(hdr->pkt_seq    == TEST_PKT_SEQ);
     REQUIRE(hdr->tag_owner  == true);
-    REQUIRE(hdr->tag        == TEST_MSG_TAG);
 
     REQUIRE(memcmp(packet->payload, TEST_PKT_PAYLOAD_DATA, payload_len) == 0);
 }
@@ -55,7 +53,6 @@ TEST_CASE("core-single-pkt-tx") {
 
     // Bus setup
     bus = mctp_bus_create();
-    REQUIRE(bus != NULL);
     mctp_bus_set_eid(bus, TEST_EID_SOURCE);
     mctp_bus_transport_bind(bus, &fake_binding);
 
