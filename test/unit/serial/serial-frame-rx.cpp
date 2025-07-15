@@ -20,7 +20,7 @@
         0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F  \
     }
 
-#define TEST_STRUCT_LAYOUT(...)         \
+#define TEST_IO_STRUCT_LAYOUT(...)      \
 union                                   \
 {                                       \
     struct __attribute__ ((__packed__)) \
@@ -38,7 +38,7 @@ constexpr mctp_eid_t TEST_EID_SOURCE    = 0xA;
 constexpr mctp_eid_t TEST_EID_DEST      = 0xB;
 constexpr size_t TEST_PKT_SIZE          = MCTP_PKT_MAX_SIZE;
 
-constexpr TEST_STRUCT_LAYOUT(
+constexpr TEST_IO_STRUCT_LAYOUT(
     uint8_t revision = MCTP_SERIAL_REVISION;
     uint8_t byte_count = TEST_PKT_SIZE;
     uint8_t packet[TEST_PKT_SIZE];
@@ -57,7 +57,7 @@ const uint16_t TEST_CRC_VAL = crc16_calc_block(
     sizeof(TEST_CRC_STRUCT.DATA)
 );
 
-const TEST_STRUCT_LAYOUT(
+const TEST_IO_STRUCT_LAYOUT(
     mctp_serial_header_t header;
     uint8_t packet[TEST_PKT_SIZE];
     mctp_serial_trailer_t trailer;
@@ -79,7 +79,7 @@ TEST_SERIAL_FRAME = {
 };
 
 
-void serial_buff_rx(
+static void serial_buff_rx(
     const mctp_binding_t *binding,
 	const uint8_t buffer_data[],
     const size_t buffer_len
@@ -90,11 +90,11 @@ void serial_buff_rx(
     }
 }
 
-TEST_CASE( "MCTP serial frame rx" ) {
+
+TEST_CASE("serial-frame-rx") {
     mctp_bus_t *bus = NULL;
     mctp_serial_t *serial = NULL;
     mctp_binding_t *binding = NULL;
-    mctp_pktq_t tx_queue = {};
 
     // Bus setup
     bus = mctp_bus_create();

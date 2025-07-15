@@ -20,6 +20,7 @@ mctp_transport_header_t;
 
 #define MCTP_PKT_HDR_SIZE (sizeof(mctp_transport_header_t))
 #define MCTP_PKT_MAX_SIZE (MCTP_PKT_HDR_SIZE + MCTP_BASE_MTU)
+#define MCTP_PKT_MIN_SIZE (MCTP_PKT_HDR_SIZE + sizeof(mctp_generic_header_t))
 
 typedef struct
 {
