@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.5 FATAL_ERROR)
 
 project(mctp C)
 
-enable_testing()
+option(BUILD_TESTING "Enable testing feature" ON)
 
 set(CMAKE_C_STANDARD 11)
 set(C_STANDARD_REQUIRED TRUE)
@@ -24,8 +24,15 @@ target_include_directories (${PROJECT_NAME}
     PUBLIC ${PROJECT_ROOT}/include
 )
 
-include(CTest)
+if(BUILD_TESTING)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        "--coverage"
+    )
 
-target_link_libraries(mctp PUBLIC gcov)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        gcov
+    )
 
-add_subdirectory(test)
+    include(CTest)
+    add_subdirectory(test)
+endif()
