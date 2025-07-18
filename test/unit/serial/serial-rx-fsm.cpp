@@ -29,7 +29,6 @@ constexpr uint8_t TEST_ESCAPED_PAYLOAD_SIZE = TEST_PKT_PAYLOAD_SIZE + 2;
 
 constexpr TEST_IO_STRUCT_LAYOUT(
     mctp_transport_header_t transport_header;
-    mctp_generic_header_t generic_header;
     uint8_t payload[TEST_ESCAPED_PAYLOAD_SIZE];
 )
 TEST_FRAME_PACKET = {
@@ -54,7 +53,6 @@ constexpr TEST_IO_STRUCT_LAYOUT(
     union {
         struct {
             mctp_transport_header_t transport_header;
-            mctp_generic_header_t generic_header;
             uint8_t payload[TEST_PKT_PAYLOAD_SIZE];
         };
         uint8_t data[TEST_BYTE_COUNT];
