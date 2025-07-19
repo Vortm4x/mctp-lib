@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
 # SERIAL
     unit/serial/serial-rx-fsm.cpp
     unit/serial/serial-frame-rx.cpp
+    unit/serial/serial-pkt-tx.cpp
 # CORE
     unit/core/core-control-req-tx.cpp
     unit/core/core-single-pkt-tx.cpp

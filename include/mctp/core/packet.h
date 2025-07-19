@@ -22,18 +22,20 @@ mctp_transport_header_t;
 #define MCTP_PKT_MAX_SIZE (MCTP_PKT_HDR_SIZE + MCTP_BASE_MTU)
 #define MCTP_PKT_MIN_SIZE (MCTP_PKT_HDR_SIZE)
 
+typedef union __attribute__ ((__packed__))
+{
+    struct __attribute__ ((__packed__))
+    {
+        mctp_transport_header_t header;
+        uint8_t payload[MCTP_BASE_MTU];
+    };
+    uint8_t data[MCTP_PKT_MAX_SIZE];
+}
+mctp_io_packet_t;
+
 typedef struct
 {
-    union __attribute__ ((__packed__))
-    {
-        struct __attribute__ ((__packed__))
-        {
-            mctp_transport_header_t header;
-            uint8_t payload[MCTP_BASE_MTU];
-        };
-        uint8_t data[MCTP_PKT_MAX_SIZE];
-    }
-    io;
+    mctp_io_packet_t io;
     size_t len;
 }
 mctp_packet_t;
