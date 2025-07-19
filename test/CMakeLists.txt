@@ -16,6 +16,7 @@ add_executable(${PROJECT_NAME}
 # CORE
     unit/core/core-control-req-tx.cpp
     unit/core/core-single-pkt-tx.cpp
+    unit/core/core-multi-pkt-tx.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
