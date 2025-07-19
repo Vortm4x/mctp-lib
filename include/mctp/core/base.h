@@ -62,4 +62,4 @@ void mctp_generic_header_dump(
 
 EXTERN_C_END
 
-#endif // _MCTP_CORE_BASE_H_ 
+#endif // _MCTP_CORE_BASE_H_

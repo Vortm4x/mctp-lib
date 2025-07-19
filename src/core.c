@@ -24,7 +24,7 @@ void mctp_message_disassemble(
         .tag_owner = message_ctx->tag_owner,
     };
 
-    const size_t packet_count = 
+    const size_t packet_count =
         (message_len / MCTP_BASE_MTU) +
         (message_len % MCTP_BASE_MTU ? 1 : 0);
 
@@ -34,7 +34,7 @@ void mctp_message_disassemble(
         header.eom = (i + 1 == packet_count);
 
         const uint8_t *payload_data = &message_data[MCTP_BASE_MTU * i];
-        const size_t payload_len = header.eom 
+        const size_t payload_len = header.eom
             ? message_len - MCTP_BASE_MTU * i
             : MCTP_BASE_MTU;
 

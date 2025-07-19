@@ -19,10 +19,10 @@ constexpr test_io_struct_wrapper_t<
 TEST_FRAMED_PACKET = {
     .fields = {
         .payload = {
-            MCTP_SERIAL_ESCAPE_FLAG, 
+            MCTP_SERIAL_ESCAPE_FLAG,
             MCTP_SERIAL_ESCAPE_BYTE(MCTP_SERIAL_ESCAPE_FLAG),
             // Escaped "frame flag" (0x7E -> 0x7D 0x5E)
-            MCTP_SERIAL_ESCAPE_FLAG, 
+            MCTP_SERIAL_ESCAPE_FLAG,
             MCTP_SERIAL_ESCAPE_BYTE(MCTP_SERIAL_FRAME_FLAG),
             // Regular data
             TEST_RANDOM_BYTE
@@ -159,18 +159,18 @@ TEST_CASE("serial-rx-fsm") {
 
             SECTION("Receive byte count: < MIN") {
                 mctp_serial_byte_rx(binding, MCTP_PKT_MIN_SIZE - 1);
-                REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);             
+                REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);
             }
 
             SECTION("Receive byte count: > MAX") {
                 mctp_serial_byte_rx(binding, MCTP_PKT_MAX_SIZE + 1);
-                REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);             
+                REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);
             }
         }
 
         SECTION("Receive revision: frame flag") {
             mctp_serial_byte_rx(binding, MCTP_SERIAL_FRAME_FLAG);
-            REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_REVISION); 
+            REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_REVISION);
         }
 
         SECTION("Receive revision: random byte") {

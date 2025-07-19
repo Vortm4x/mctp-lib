@@ -47,4 +47,4 @@ typedef struct __attribute__ ((__packed__))
 }
 mctp_interface_t;
 
-#endif // _MCTP_CONTROL_TYPES_H_ 
+#endif // _MCTP_CONTROL_TYPES_H_
