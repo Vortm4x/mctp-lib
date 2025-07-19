@@ -77,7 +77,7 @@ void mctp_serial_frame_tx(
     const mctp_serial_trailer_t *trailer
 ) {
     mctp_serial_buffer_tx(serial, header->data, sizeof(header->data));
-    mctp_serial_escaped_buffer_tx(serial, packet->data, packet->len);
+    mctp_serial_escaped_buffer_tx(serial, packet->io.data, packet->len);
     mctp_serial_buffer_tx(serial, trailer->data, sizeof(trailer->data));
 }
 
@@ -95,7 +95,7 @@ void mctp_serial_packet_tx(
 
     crc = crc16_calc_byte(crc, header.revision);
     crc = crc16_calc_byte(crc, header.byte_count);
-    crc = crc16_calc_block(crc, packet->data, packet->len);
+    crc = crc16_calc_block(crc, packet->io.data, packet->len);
 
     const mctp_serial_trailer_t trailer = {
         .fcs_high = MCTP_CRC16_GET_HIGH(crc),
@@ -122,7 +122,7 @@ void mctp_serial_push_rx_data(
 	const uint8_t byte
 ) {
     serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
-    serial->rx.packet.data[serial->rx.next_pkt_byte] = byte;
+    serial->rx.packet.io.data[serial->rx.next_pkt_byte] = byte;
     serial->rx.next_pkt_byte++;
 
     if (serial->rx.packet.len == serial->rx.next_pkt_byte)

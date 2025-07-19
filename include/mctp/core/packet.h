@@ -32,7 +32,8 @@ typedef struct
             uint8_t payload[MCTP_BASE_MTU];
         };
         uint8_t data[MCTP_PKT_MAX_SIZE];
-    };
+    }
+    io;
     size_t len;
 }
 mctp_packet_t;
