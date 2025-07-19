@@ -47,4 +47,4 @@ void mctp_pktq_rx(
 
 EXTERN_C_END
 
-#endif // _MCTP_CORE_MCTP_H_ 
+#endif // _MCTP_CORE_MCTP_H_

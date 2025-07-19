@@ -22,7 +22,7 @@ mctp_resp_error_t;
 
 // MCTP_CTRL_CMD_SET_ENDPOINT_ID
 typedef MCTP_CTRL_RESP_LAYOUT(
-    mctp_eid_alloc_status_t eid_alloc_status    : 2; 
+    mctp_eid_alloc_status_t eid_alloc_status    : 2;
     uint8_t                                     : 2;
     mctp_eid_assign_status_t eid_assign_status  : 2;
     uint8_t                                     : 2;
@@ -102,7 +102,7 @@ mctp_resp_routing_info_upd_t;
 typedef MCTP_CTRL_RESP_LAYOUT(
     uint8_t next_entry_handle;
     uint8_t routing_table_entry_count;
-    mctp_routing_table_entry_t routing_table_entry; 
+    mctp_routing_table_entry_t routing_table_entry;
 )
 mctp_resp_get_routing_table_t;
 
@@ -190,4 +190,4 @@ mctp_resp_query_supp_if_t;
         __VA_ARGS__                         \
     )
 
-#endif // _MCTP_CONTROL_RESPONSE_H_ 
+#endif // _MCTP_CONTROL_RESPONSE_H_

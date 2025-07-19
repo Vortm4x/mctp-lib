@@ -68,4 +68,4 @@ typedef enum __attribute__ ((__packed__))
 }
 mctp_routing_table_entry_type_t;
 
-#endif // _MCTP_CONTROL_CONSTANTS_H_ 
+#endif // _MCTP_CONTROL_CONSTANTS_H_

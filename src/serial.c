@@ -42,7 +42,7 @@ void mctp_serial_buffer_tx(
     const uint8_t buffer_data[],
     const size_t buffer_len
 ) {
-    for(size_t i = 0; i < buffer_len; ++i) 
+    for(size_t i = 0; i < buffer_len; ++i)
     {
         serial->byte_tx(buffer_data[i]);
     }
@@ -53,7 +53,7 @@ void mctp_serial_escaped_buffer_tx(
     const uint8_t buffer_data[],
     const size_t buffer_len
 ) {
-    for(size_t i = 0; i < buffer_len; ++i) 
+    for(size_t i = 0; i < buffer_len; ++i)
     {
         switch (buffer_data[i])
         {
@@ -162,7 +162,7 @@ void mctp_serial_byte_rx(
                     serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
                     serial->rx.state = MCTP_SERIAL_RX_STATE_PKT_LEN;
                 break;
-            
+
                 case MCTP_SERIAL_FRAME_FLAG:
                 break;
 
@@ -236,7 +236,7 @@ void mctp_serial_byte_rx(
             {
                 mctp_packet_rx(binding->bus, &serial->rx.packet);
             }
-            
+
             mctp_serial_reset_rx_ctx(serial);
         }
         break;

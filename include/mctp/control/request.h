@@ -154,4 +154,4 @@ mctp_req_query_supp_if_t;
         __VA_ARGS__                         \
     )
 
-#endif // _MCTP_CONTROL_REQUEST_H_ 
+#endif // _MCTP_CONTROL_REQUEST_H_

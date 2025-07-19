@@ -21,7 +21,7 @@ typedef enum __attribute__ ((__packed__))
     MCTP_PHYSICAL_MEDIUM_SMBUS30_400KHZ         = 0x04,
     MCTP_PHYSICAL_MEDIUM_I2C_FAST_MODE          = 0x04,
     MCTP_PHYSICAL_MEDIUM_SMBUS30_1000KHZ        = 0x05,
-    MCTP_PHYSICAL_MEDIUM_I2C_FAST_MODE_PLUS     = 0x05,    
+    MCTP_PHYSICAL_MEDIUM_I2C_FAST_MODE_PLUS     = 0x05,
     MCTP_PHYSICAL_MEDIUM_I2C_HIGH_SPEED_MODE    = 0x06,
     MCTP_PHYSICAL_MEDIUM_PCIE_REV11             = 0x08,
     MCTP_PHYSICAL_MEDIUM_PCIE_REV20             = 0x09,
@@ -66,4 +66,4 @@ typedef enum __attribute__ ((__packed__))
 }
 mctp_hif_type_t;
 
-#endif // _MCTP_CORE_MEDIUM_INFO_H_ 
+#endif // _MCTP_CORE_MEDIUM_INFO_H_

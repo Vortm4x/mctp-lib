@@ -40,7 +40,7 @@ size_t mctp_pkt_payload_len(
     if (packet->len < MCTP_PKT_HDR_SIZE) {
         return 0;
     }
-    
+
     return (packet->len - MCTP_PKT_HDR_SIZE);
 }
 
