@@ -125,6 +125,11 @@ TEST_CASE("serial-pkt-tx") {
     fclose(TEST_RX_CTX.stream);
 
     REQUIRE(sizeof(TEST_SERIAL_FRAME.data) == TEST_RX_CTX.size);
+ 
+    auto *test_rx_frame = reinterpret_cast<decltype(TEST_SERIAL_FRAME) *>(TEST_RX_CTX.buffer);
+    mctp_serial_header_dump(&test_rx_frame->fields.serial_header);
+    mctp_serial_trailer_dump(&test_rx_frame->fields.serial_trailer);
+
     REQUIRE(memcmp(TEST_SERIAL_FRAME.data, TEST_RX_CTX.buffer, TEST_RX_CTX.size) == 0);
 
     // Clean up
