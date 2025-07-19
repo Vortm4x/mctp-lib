@@ -113,7 +113,7 @@ void mctp_serial_packet_tx(
 void mctp_serial_reset_rx_ctx(
     mctp_serial_t* serial
 ) {
-    memset(&serial->rx, 0, sizeof(&serial->rx));
+    memset(&serial->rx, 0, sizeof(serial->rx));
     serial->rx.state = MCTP_SERIAL_RX_STATE_SYNC_START;
 }
 

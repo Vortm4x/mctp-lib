@@ -97,14 +97,13 @@
         return (queue->front == NULL);                                      \
     }                                                                       \
                                                                             \
-    _queue_node_t(q_x) *_queue_method(q_x, clear)(                          \
+    void _queue_method(q_x, clear)(                                         \
         _queue_t(q_x) *queue                                                \
     ) {                                                                     \
         while(!_queue_method(q_x, empty)(queue))                            \
         {                                                                   \
             value_t value = _queue_method(q_x, dequeue)(queue);             \
             value_deinit(value);                                            \
-                                                                            \
         }                                                                   \
     }
 

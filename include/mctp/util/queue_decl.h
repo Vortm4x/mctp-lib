@@ -59,7 +59,7 @@
         const _queue_t(q_x) *queue                          \
     );                                                      \
                                                             \
-    _queue_node_t(q_x) *_queue_method(q_x, clear)(          \
+    void _queue_method(q_x, clear)(                         \
         _queue_t(q_x) *queue                                \
     );                                                      \
                                                             \
