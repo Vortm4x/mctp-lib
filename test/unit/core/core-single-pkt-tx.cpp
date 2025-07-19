@@ -29,9 +29,9 @@ static void fake_binding_packet_tx(
     const size_t payload_len = mctp_pkt_payload_len(packet);
     REQUIRE(payload_len == TEST_PKT_PAYLOAD_LEN);
 
-    const mctp_transport_header_t *hdr = &packet->header;
+    const mctp_transport_header_t *hdr = &packet->io.header;
 
-    mctp_pkt_header_dump(&packet->header);
+    mctp_pkt_header_dump(&packet->io.header);
     REQUIRE(hdr->version    == MCTP_PKT_HDR_VER);
     REQUIRE(hdr->dest       == TEST_EID_DEST);
     REQUIRE(hdr->source     == TEST_EID_SOURCE);
@@ -40,7 +40,7 @@ static void fake_binding_packet_tx(
     REQUIRE(hdr->pkt_seq    == TEST_PKT_SEQ);
     REQUIRE(hdr->tag_owner  == true);
 
-    REQUIRE(memcmp(packet->payload, TEST_PKT_PAYLOAD_DATA, payload_len) == 0);
+    REQUIRE(memcmp(packet->io.payload, TEST_PKT_PAYLOAD_DATA, payload_len) == 0);
 }
 
 

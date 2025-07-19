@@ -122,22 +122,22 @@ TEST_CASE("serial-rx-fsm") {
                     REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_ESCAPE);
                     mctp_serial_byte_rx(binding, *(frame_payload++));
                     REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_DATA);
-                    REQUIRE(serial->rx.packet.data[serial->rx.next_pkt_byte - 1] == *(escaped_payload++));
+                    REQUIRE(serial->rx.packet.io.data[serial->rx.next_pkt_byte - 1] == *(escaped_payload++));
 
                     // Receive "frame flag" (0x7E)
                     mctp_serial_byte_rx(binding, *(frame_payload++));
                     REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_ESCAPE);
                     mctp_serial_byte_rx(binding, *(frame_payload++));
                     REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_DATA);
-                    REQUIRE(serial->rx.packet.data[serial->rx.next_pkt_byte - 1] == *(escaped_payload++));
+                    REQUIRE(serial->rx.packet.io.data[serial->rx.next_pkt_byte - 1] == *(escaped_payload++));
 
                     // Receive regular data (also last data byte)
                     mctp_serial_byte_rx(binding, *(frame_payload++));
                     REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_FCS_HIGH);
-                    REQUIRE(serial->rx.packet.data[serial->rx.next_pkt_byte - 1] == *(escaped_payload++));
+                    REQUIRE(serial->rx.packet.io.data[serial->rx.next_pkt_byte - 1] == *(escaped_payload++));
 
                     const uint8_t* test_packet_data = TEST_CRC_STRUCT.FIELDS.packet.data;
-                    REQUIRE(memcmp(serial->rx.packet.data, test_packet_data, TEST_BYTE_COUNT) == 0);
+                    REQUIRE(memcmp(serial->rx.packet.io.data, test_packet_data, TEST_BYTE_COUNT) == 0);
 
                     SECTION("Receive CRC: valid") {
                         mctp_serial_byte_rx(binding, MCTP_CRC16_GET_HIGH(TEST_CRC_VAL));

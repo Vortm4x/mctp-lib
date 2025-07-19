@@ -36,17 +36,20 @@ union                                   \
 constexpr mctp_eid_t TEST_EID_SOURCE    = 0xA;
 constexpr mctp_eid_t TEST_EID_DEST      = 0xB;
 constexpr size_t TEST_PKT_SIZE          = MCTP_PKT_MAX_SIZE;
+constexpr size_t TEST_FRAME_SIZE        = TEST_PKT_SIZE;
 
 constexpr TEST_IO_STRUCT_LAYOUT(
     uint8_t revision;
     uint8_t byte_count;
-    uint8_t packet[TEST_PKT_SIZE];
+    mctp_io_packet_t packet;
 )
 TEST_CRC_STRUCT = {
     .FIELDS = {
         .revision = MCTP_SERIAL_REVISION,
         .byte_count = TEST_PKT_SIZE,
-        .packet = TEST_PACKET_DATA
+        .packet = {
+            .data = TEST_PACKET_DATA
+        }
     }
 };
 
@@ -58,7 +61,7 @@ const uint16_t TEST_CRC_VAL = crc16_calc_block(
 
 const TEST_IO_STRUCT_LAYOUT(
     mctp_serial_header_t header;
-    uint8_t packet[TEST_PKT_SIZE];
+    uint8_t packet[TEST_FRAME_SIZE];
     mctp_serial_trailer_t trailer;
 )
 TEST_SERIAL_FRAME = {
@@ -111,7 +114,7 @@ TEST_CASE("serial-frame-rx") {
     mctp_packet_t* rx_packet = mctp_pktq_dequeue(&bus->rx.packet_queue);
 
     REQUIRE(rx_packet->len == TEST_PKT_SIZE);
-    REQUIRE(memcmp(TEST_SERIAL_FRAME.FIELDS.packet, rx_packet->data, TEST_PKT_SIZE) == 0);
+    REQUIRE(memcmp(TEST_CRC_STRUCT.FIELDS.packet.data, rx_packet->io.data, TEST_PKT_SIZE) == 0);
 
     // Clean up
     mctp_pkt_destroy(rx_packet);
