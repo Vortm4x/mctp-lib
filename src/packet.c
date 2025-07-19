@@ -11,8 +11,8 @@ mctp_packet_t *mctp_pkt_create(
 ) {
     mctp_packet_t *packet = _alloc(mctp_packet_t);
 
-    memcpy(&packet->header, header, sizeof(mctp_transport_header_t));
-    memcpy(packet->payload, payload_data, payload_len);
+    memcpy(&packet->io.header, header, sizeof(mctp_transport_header_t));
+    memcpy(packet->io.payload, payload_data, payload_len);
     packet->len = payload_len + sizeof(mctp_transport_header_t);
 
     return packet;
@@ -49,9 +49,9 @@ bool mctp_pkt_message_match(
     const mctp_msg_ctx_t *message_ctx
 ) {
     return
-        packet->header.source == message_ctx->eid &&
-        packet->header.tag == message_ctx->tag &&
-        packet->header.tag_owner == message_ctx->tag_owner;
+        packet->io.header.source == message_ctx->eid &&
+        packet->io.header.tag == message_ctx->tag &&
+        packet->io.header.tag_owner == message_ctx->tag_owner;
 }
 
 void mctp_pkt_header_dump(

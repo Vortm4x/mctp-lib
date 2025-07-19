@@ -95,12 +95,12 @@ void mctp_packet_rx(
 
     mctp_pktq_enqueue(&bus->rx.packet_queue, rx_packet);
 
-    if(rx_packet->header.eom)
+    if(rx_packet->io.header.eom)
     {
         mctp_msg_ctx_t message_ctx = {
-            .eid = rx_packet->header.source,
-            .tag = rx_packet->header.tag,
-            .tag_owner = rx_packet->header.tag_owner
+            .eid = rx_packet->io.header.source,
+            .tag = rx_packet->io.header.tag,
+            .tag_owner = rx_packet->io.header.tag_owner
         };
 
         mctp_msgq_enqueue(
