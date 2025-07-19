@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <unit/serial/test-common.h>
 #include <string.h>
 
 #include <mctp/binding/serial.h>
@@ -7,9 +8,8 @@
 #include <mctp/util/crc16.h>
 
 
-#define TEST_PACKET_DATA                                \
+#define TEST_PAYLOAD_DATA                               \
     {                                                   \
-        0x00, 0x01, 0x02, 0x03,                         \
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, \
         0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, \
         0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, \
@@ -20,59 +20,45 @@
         0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F  \
     }
 
-#define TEST_IO_STRUCT_LAYOUT(...)      \
-union                                   \
-{                                       \
-    struct __attribute__ ((__packed__)) \
-    {                                   \
-        __VA_ARGS__                     \
-    }                                   \
-    FIELDS;                             \
-                                        \
-    uint8_t DATA[sizeof(FIELDS)];       \
-}
-
 
 constexpr mctp_eid_t TEST_EID_SOURCE    = 0xA;
 constexpr mctp_eid_t TEST_EID_DEST      = 0xB;
+constexpr size_t TEST_PAYLOAD_SIZE      = MCTP_BASE_MTU;
 constexpr size_t TEST_PKT_SIZE          = MCTP_PKT_MAX_SIZE;
 constexpr size_t TEST_FRAME_SIZE        = TEST_PKT_SIZE;
 
-constexpr TEST_IO_STRUCT_LAYOUT(
-    uint8_t revision;
-    uint8_t byte_count;
-    mctp_io_packet_t packet;
-)
+
+constexpr test_io_struct_wrapper_t<
+    test_crc_struct_t<TEST_PAYLOAD_SIZE>
+>
 TEST_CRC_STRUCT = {
-    .FIELDS = {
-        .revision = MCTP_SERIAL_REVISION,
-        .byte_count = TEST_PKT_SIZE,
+    .fields = {
         .packet = {
-            .data = TEST_PACKET_DATA
+            .payload = TEST_PAYLOAD_DATA
         }
     }
 };
 
 const uint16_t TEST_CRC_VAL = crc16_calc_block(
     MCTP_CRC16_INIT,
-    TEST_CRC_STRUCT.DATA,
-    sizeof(TEST_CRC_STRUCT.DATA)
+    TEST_CRC_STRUCT.data,
+    sizeof(TEST_CRC_STRUCT.data)
 );
 
-const TEST_IO_STRUCT_LAYOUT(
-    mctp_serial_header_t header;
-    uint8_t packet[TEST_FRAME_SIZE];
-    mctp_serial_trailer_t trailer;
-)
+const test_io_struct_wrapper_t<
+    test_serial_frame_t<TEST_PAYLOAD_SIZE>
+>
 TEST_SERIAL_FRAME = {
-    .FIELDS = {
-        .header = {
+    .fields = {
+        .serial_header = {
             .framing_flag = MCTP_SERIAL_FRAME_FLAG,
             .revision = MCTP_SERIAL_REVISION,
             .byte_count = TEST_PKT_SIZE
         },
-        .packet = TEST_PACKET_DATA,
-        .trailer = {
+        .packet = {
+            .payload = TEST_PAYLOAD_DATA
+        },
+        .serial_trailer = {
             .fcs_high = MCTP_CRC16_GET_HIGH(TEST_CRC_VAL),
             .fcs_low = MCTP_CRC16_GET_LOW(TEST_CRC_VAL),
             .framing_flag = MCTP_SERIAL_FRAME_FLAG,
@@ -107,14 +93,14 @@ TEST_CASE("serial-frame-rx") {
     mctp_bus_transport_bind(bus, binding);
 
     // Read frame
-    serial_buff_rx(binding, TEST_SERIAL_FRAME.DATA, sizeof(TEST_SERIAL_FRAME.DATA));
+    serial_buff_rx(binding, TEST_SERIAL_FRAME.data, sizeof(TEST_SERIAL_FRAME.data));
     REQUIRE_FALSE(mctp_pktq_empty(&bus->rx.packet_queue));
 
     // Deque packet
     mctp_packet_t* rx_packet = mctp_pktq_dequeue(&bus->rx.packet_queue);
 
     REQUIRE(rx_packet->len == TEST_PKT_SIZE);
-    REQUIRE(memcmp(TEST_CRC_STRUCT.FIELDS.packet.data, rx_packet->io.data, TEST_PKT_SIZE) == 0);
+    REQUIRE(memcmp(TEST_CRC_STRUCT.fields.packet.data, rx_packet->io.data, TEST_PKT_SIZE) == 0);
 
     // Clean up
     mctp_pkt_destroy(rx_packet);

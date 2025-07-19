@@ -18,6 +18,10 @@ add_executable(${PROJECT_NAME}
     unit/core/core-single-pkt-tx.cpp
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${PROJECT_ROOT}
+)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
     mctp
     Catch2::Catch2WithMain
