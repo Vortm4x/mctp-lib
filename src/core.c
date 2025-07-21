@@ -95,19 +95,19 @@ void mctp_packet_rx(
 
     mctp_pktq_enqueue(&bus->rx.packet_queue, rx_packet);
 
-    if(rx_packet->io.header.eom)
-    {
-        mctp_msg_ctx_t message_ctx = {
-            .eid = rx_packet->io.header.source,
-            .tag = rx_packet->io.header.tag,
-            .tag_owner = rx_packet->io.header.tag_owner
-        };
+    // if(rx_packet->io.header.eom)
+    // {
+    //     mctp_msg_ctx_t message_ctx = {
+    //         .eid = rx_packet->io.header.source,
+    //         .tag = rx_packet->io.header.tag,
+    //         .tag_owner = rx_packet->io.header.tag_owner
+    //     };
 
-        mctp_msgq_enqueue(
-            &bus->rx.message_queue,
-            message_ctx
-        );
-    }
+    //     mctp_msgq_enqueue(
+    //         &bus->rx.message_queue,
+    //         message_ctx
+    //     );
+    // }
 }
 
 void mctp_pktq_rx(
