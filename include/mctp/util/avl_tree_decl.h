@@ -6,10 +6,9 @@
 #include <stdint.h>
 
 
-typedef int8_t avl_height_t;
-
-
 #define _avl_tree_type_decl(typename, avl_value_t)  \
+                                                    \
+typedef int8_t avl_height_t;                        \
                                                     \
 typedef struct _x_node_t(typename)                  \
 {                                                   \

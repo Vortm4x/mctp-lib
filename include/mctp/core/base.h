@@ -45,11 +45,16 @@ typedef union __attribute__ ((__packed__))
 }
 mctp_ver_t;
 
-typedef struct
+typedef union
 {
-    mctp_eid_t eid;
-    uint8_t tag     : 3;
-    bool tag_owner  : 1;
+    struct
+    {
+        mctp_eid_t eid;
+        uint8_t tag     : 3;
+        bool tag_owner  : 1;
+        uint8_t         : 4;
+    };
+    uint16_t id : 12;
 }
 mctp_msg_ctx_t;
 
