@@ -1,6 +1,7 @@
 #ifndef _MCTP_CORE_PACKET_QUEUE_H_
 #define _MCTP_CORE_PACKET_QUEUE_H_
 
+
 #include <mctp/util/queue_decl.h>
 #include <mctp/core/packet.h>
 

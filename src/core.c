@@ -56,10 +56,12 @@ void mctp_pktq_drain(
 ) {
     while (!mctp_pktq_empty(tx_queue))
     {
-        mctp_packet_t *packet = mctp_pktq_dequeue(tx_queue);
+        mctp_packet_t *packet = mctp_pktq_node_data(
+            mctp_pktq_front(tx_queue)
+        );
 
         mctp_packet_tx(bus, packet);
-        mctp_pkt_destroy(packet);
+        mctp_pktq_dequeue(tx_queue);
     }
 }
 
@@ -71,7 +73,7 @@ void mctp_pktq_tx(
 
     while (node != NULL)
     {
-        mctp_packet_t *packet = mctp_pktq_node_value(node);
+        mctp_packet_t *packet = mctp_pktq_node_data(node);
 
         mctp_packet_tx(bus, packet);
         node = mctp_pktq_node_next(node);

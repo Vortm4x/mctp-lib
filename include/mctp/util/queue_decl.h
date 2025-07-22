@@ -1,68 +1,66 @@
 #ifndef _MCTP_UTIL_QUEUE_DECL_H_
 #define _MCTP_UTIL_QUEUE_DECL_H_
 
+#include <mctp/util/decl_common.h>
 #include <mctp/util/extern_c.h>
+#include <stdbool.h>
 
 
-#define _queue_t(q_x) q_x##_t
-#define _queue_node_t(q_x) q_x##_node_t
-#define _queue_method(q_x, method) q_x##_##method
-
-#define _queue_type_decl(q_x, value_t)                      \
-                                                            \
-    EXTERN_C_BEGIN                                          \
-                                                            \
-    typedef struct _queue_node_t(q_x)                       \
-    {                                                       \
-        value_t value;                                      \
-        struct _queue_node_t(q_x) *next;                    \
-    }                                                       \
-    _queue_node_t(q_x);                                     \
-                                                            \
-    typedef struct                                          \
-    {                                                       \
-        _queue_node_t(q_x) *front;                          \
-        _queue_node_t(q_x) *rear;                           \
-    }                                                       \
-    _queue_t(q_x);                                          \
-                                                            \
-    _queue_node_t(q_x) *_queue_method(q_x, node_create)(    \
-        value_t value                                       \
-    );                                                      \
-                                                            \
-    void _queue_method(q_x, node_destroy)(                  \
-        _queue_node_t(q_x) *node                            \
-    );                                                      \
-                                                            \
-    _queue_node_t(q_x) *_queue_method(q_x, node_next)(      \
-        const _queue_node_t(q_x) *node                      \
-    );                                                      \
-                                                            \
-    value_t _queue_method(q_x, node_value)(                 \
-        const _queue_node_t(q_x) *node                      \
-    );                                                      \
-                                                            \
-    void _queue_method(q_x, enqueue)(                       \
-        _queue_t(q_x) *queue,                               \
-        value_t value                                       \
-    );                                                      \
-                                                            \
-    value_t _queue_method(q_x, dequeue)(                    \
-        _queue_t(q_x) *queue                                \
-    );                                                      \
-                                                            \
-    _queue_node_t(q_x) *_queue_method(q_x, front)(          \
-        const _queue_t(q_x) *queue                          \
-    );                                                      \
-                                                            \
-    bool _queue_method(q_x, empty)(                         \
-        const _queue_t(q_x) *queue                          \
-    );                                                      \
-                                                            \
-    void _queue_method(q_x, clear)(                         \
-        _queue_t(q_x) *queue                                \
-    );                                                      \
-                                                            \
-    EXTERN_C_END
+#define _queue_type_decl(typename, queue_value_t)   \
+                                                    \
+typedef struct _x_node_t(typename)                  \
+{                                                   \
+    queue_value_t data;                             \
+    struct _x_node_t(typename) *next;               \
+}                                                   \
+_x_node_t(typename);                                \
+                                                    \
+typedef struct                                      \
+{                                                   \
+    _x_node_t(typename) *front;                     \
+    _x_node_t(typename) *back;                      \
+}                                                   \
+_x_type_t(typename);                                \
+                                                    \
+                                                    \
+EXTERN_C_BEGIN                                      \
+                                                    \
+_x_node_t(typename) *                               \
+_x_method(typename, node_next)(                     \
+    const _x_node_t(typename) *node                 \
+);                                                  \
+                                                    \
+queue_value_t                                       \
+_x_method(typename, node_data)(                     \
+    const _x_node_t(typename) *node                 \
+);                                                  \
+                                                    \
+_x_node_t(typename) *                               \
+_x_method(typename, front)(                         \
+    const _x_type_t(typename) *queue                \
+);                                                  \
+                                                    \
+bool                                                \
+_x_method(typename, empty)(                         \
+    const _x_type_t(typename) *queue                \
+);                                                  \
+                                                    \
+void                                                \
+_x_method(typename, enqueue)(                       \
+    _x_type_t(typename) *queue,                     \
+    queue_value_t data                              \
+);                                                  \
+                                                    \
+void                                                \
+_x_method(typename, dequeue)(                       \
+    _x_type_t(typename) *queue                      \
+);                                                  \
+                                                    \
+void                                                \
+_x_method(typename, clear)(                         \
+    _x_type_t(typename) *queue                      \
+);                                                  \
+                                                    \
+EXTERN_C_END
 
 #endif // _MCTP_UTIL_QUEUE_DECL_H_
