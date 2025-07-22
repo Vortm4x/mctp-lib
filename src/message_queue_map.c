@@ -1,7 +1,7 @@
-#include <mctp/core/queue_ctx_map.h>
+#include <mctp/core/message_queue_map.h>
 
 
-#define typename mctp_qctx_map
+#define typename mctp_msgq_map
 #define avl_value_t mctp_msgq_t
 
 

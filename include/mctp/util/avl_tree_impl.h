@@ -3,6 +3,7 @@
 
 #include <mctp/util/decl_common.h>
 #include <mctp/util/alloc.h>
+#include <string.h>
 
 // Define following macros in .c file
 //
@@ -15,7 +16,10 @@
 // #define avl_data_eq(left, right)
 
 
+#define avl_type_t      _x_type_t(typename)
 #define avl_node_t      _x_node_t(typename)
+
+#define avl_node_data   _x_method(typename, node_data)
 #define avl_add         _x_method(typename, add)
 #define avl_remove      _x_method(typename, remove)
 #define avl_get         _x_method(typename, get)
@@ -135,6 +139,19 @@ static avl_node_t *avl_find_min(avl_node_t *node)
     return node;
 }
 
+avl_value_t avl_node_data(
+    avl_node_t *node
+) {
+    if (node != NULL)
+    {
+        avl_value_t value;
+        memset(&value, 0, sizeof(avl_value_t));
+
+        return value;
+    }
+
+    return node->data;
+}
 
 avl_node_t *avl_add(
     avl_node_t *node,

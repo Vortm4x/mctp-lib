@@ -56,11 +56,12 @@ queue_node_t *queue_node_next(
 queue_value_t queue_node_data(
     const queue_node_t *node
 ) {
-    if (node == NULL)
+    if (node != NULL)
     {
         queue_value_t value;
-
         memset(&value, 0, sizeof(queue_value_t));
+
+        return value;
     }
 
     return node->data;
