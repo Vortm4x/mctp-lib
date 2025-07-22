@@ -110,34 +110,6 @@ void mctp_packet_rx(
     // }
 }
 
-void mctp_pktq_rx(
-    mctp_bus_t *bus,
-    mctp_pktq_t *rx_queue,
-    const mctp_msg_ctx_t *message_ctx
-) {
-    mctp_pktq_t temp_queue = {};
-
-    while (!mctp_pktq_empty(&bus->rx.packet_queue))
-    {
-        mctp_packet_t *curr = mctp_pktq_dequeue(&bus->rx.packet_queue);
-
-        if(mctp_pkt_message_match(curr, message_ctx))
-        {
-            mctp_pktq_enqueue(rx_queue, curr);
-        }
-        else
-        {
-            mctp_pktq_enqueue(&temp_queue, curr);
-        }
-    }
-
-    if(!mctp_pktq_empty(&temp_queue))
-    {
-        temp_queue.rear->next = bus->rx.packet_queue.front;
-        bus->rx.packet_queue.front = temp_queue.front;
-    }
-}
-
 void mctp_generic_header_dump(
     const mctp_generic_header_t *header
 ) {
