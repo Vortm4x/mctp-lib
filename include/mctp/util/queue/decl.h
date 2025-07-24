@@ -1,12 +1,12 @@
 #ifndef _MCTP_UTIL_QUEUE_DECL_H_
 #define _MCTP_UTIL_QUEUE_DECL_H_
 
-#include <mctp/util/decl_common.h>
+#include <mctp/util/typename.h>
 #include <mctp/util/extern_c.h>
 #include <stdbool.h>
 
 
-#define _queue_type_decl_private(   \
+#define _x_queue_type_decl_private( \
     typename,                       \
     queue_type_t,                   \
     queue_node_t,                   \
@@ -69,12 +69,12 @@ _x_method(typename, clear)(         \
 EXTERN_C_END
 
 
-#define _queue_type_decl(typename, _x_value_t)  \
-    _queue_type_decl_private(                   \
-        typename,                               \
-        _x_type_t(typename),                    \
-        _x_node_t(typename),                    \
-        _x_value_t                              \
+#define _x_queue_type_decl(typename, _x_value_t)    \
+    _x_queue_type_decl_private(                     \
+        typename,                                   \
+        _x_type_t(typename),                        \
+        _x_node_t(typename),                        \
+        _x_value_t                                  \
     )
 
 #endif // _MCTP_UTIL_QUEUE_DECL_H_

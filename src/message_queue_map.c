@@ -1,24 +1,43 @@
 #include <mctp/core/message_queue_map.h>
+#include <mctp/util/avl_tree/impl.h>
 
+typedef mctp_msgq_t avl_value_t;
 
-#define typename mctp_msgq_map
-#define avl_value_t mctp_msgq_t
+static void avl_data_destroy(
+    avl_value_t* data
+) {
+    mctp_pktq_clear(&data->queue);
+}
 
+static bool avl_data_gt(
+    const avl_value_t* left,
+    const avl_value_t* right
+) {
+    left->context.id > right->context.id;
+}
 
-#define avl_data_destroy(data) \
-    mctp_pktq_clear(&data.queue)
+static bool avl_data_lt(
+    const avl_value_t* left,
+    const avl_value_t* right
+) {
+    left->context.id < right->context.id;
+}
 
-#define avl_key(data) \
-    (data.context.id)
+static bool avl_data_eq(
+    const avl_value_t* left,
+    const avl_value_t* right
+) {
+    left->context.id != right->context.id;
+}
 
-#define avl_data_gt(left, right) \
-    (avl_key(left) > avl_key(right))
+_x_avl_tree_data_iface(avl_value_t) {
+    .destroy    = avl_data_destroy,
+    .gt         = avl_data_gt,
+    .lt         = avl_data_lt,
+    .eq         = avl_data_eq
+};
 
-#define avl_data_lt(left, right) \
-    (avl_key(left) < avl_key(right))
-
-#define avl_data_eq(left, right) \
-    (avl_key(left) == avl_key(right))
-
-
-#include <mctp/util/avl_tree_impl.h>
+_x_avl_tree_type_impl(
+    mctp_msgq_map,
+    avl_value_t
+)

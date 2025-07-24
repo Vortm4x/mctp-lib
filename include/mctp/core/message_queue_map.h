@@ -1,7 +1,7 @@
 #ifndef _MCTP_CORE_MESSAGE_QUEUE_MAP_H_
 #define _MCTP_CORE_MESSAGE_QUEUE_MAP_H_
 
-#include <mctp/util/avl_tree_decl.h>
+#include <mctp/util/avl_tree/decl.h>
 #include <mctp/core/base.h>
 #include <mctp/core/packet_queue.h>
 
@@ -14,7 +14,7 @@ typedef struct
 mctp_msgq_t;
 
 
-_avl_tree_type_decl(
+_x_avl_tree_type_decl(
     mctp_msgq_map,
     mctp_msgq_t
 )
