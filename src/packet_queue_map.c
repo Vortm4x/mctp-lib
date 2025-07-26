@@ -1,4 +1,4 @@
-#include <mctp/core/message_queue_map.h>
+#include <mctp/core/packet_queue_map.h>
 #include <mctp/util/avl_tree/impl.h>
 
 typedef mctp_pktq_t avl_value_t;
@@ -33,7 +33,7 @@ static bool avl_value_eq(
 
 
 _x_avl_tree_value_iface(
-    mctp_msgq_map,
+    mctp_pktq_map,
     avl_value_t,
     avl_key_t
 ) (
@@ -44,7 +44,7 @@ _x_avl_tree_value_iface(
 )
 
 _x_avl_tree_type_impl(
-    mctp_msgq_map,
+    mctp_pktq_map,
     avl_value_t,
     avl_key_t
 )

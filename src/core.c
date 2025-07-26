@@ -1,6 +1,6 @@
 #include <mctp/core/mctp.h>
 #include <mctp/core/binding.h>
-#include <mctp/core/message_queue_map.h>
+#include <mctp/core/packet_queue_map.h>
 
 
 uint8_t mctp_get_message_tag()
@@ -153,9 +153,9 @@ mctp_pktq_t mctp_get_rx_queue(
     mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx
 ) {
-    return mctp_msgq_map_node_data(
-        mctp_msgq_map_get(
-            bus->rx.msgq_map,
+    return mctp_pktq_map_node_data(
+        mctp_pktq_map_get(
+            bus->rx.pktq_map,
             *message_ctx
         )
     );
@@ -165,8 +165,8 @@ void mctp_drop_rx_queue(
     mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx
 ) {
-    bus->rx.msgq_map = mctp_msgq_map_remove(
-        bus->rx.msgq_map,
+    bus->rx.pktq_map = mctp_pktq_map_remove(
+        bus->rx.pktq_map,
         *message_ctx
     );
 }
@@ -176,8 +176,8 @@ void mctp_push_rx_queue(
     const mctp_pktq_t *rx_queue,
     const mctp_msg_ctx_t *message_ctx    
 ) {
-    bus->rx.msgq_map = mctp_msgq_map_add(
-        bus->rx.msgq_map,
+    bus->rx.pktq_map = mctp_pktq_map_add(
+        bus->rx.pktq_map,
         *rx_queue,
         *message_ctx
     );
