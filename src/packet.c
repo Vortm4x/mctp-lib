@@ -44,16 +44,6 @@ size_t mctp_pkt_payload_len(
     return (packet->len - MCTP_PKT_HDR_SIZE);
 }
 
-bool mctp_pkt_message_match(
-    const mctp_packet_t *packet,
-    const mctp_msg_ctx_t *message_ctx
-) {
-    return
-        packet->io.header.source == message_ctx->eid &&
-        packet->io.header.tag == message_ctx->tag &&
-        packet->io.header.tag_owner == message_ctx->tag_owner;
-}
-
 void mctp_pkt_header_dump(
     const mctp_transport_header_t *header
 ) {
