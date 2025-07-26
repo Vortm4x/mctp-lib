@@ -5,9 +5,9 @@ typedef mctp_pktq_t avl_value_t;
 typedef mctp_msg_ctx_t avl_key_t;
 
 static void avl_value_destroy(
-    avl_value_t* data
+    avl_value_t* pkt_queue
 ) {
-    mctp_pktq_clear(data);
+    mctp_pktq_clear(pkt_queue);
 }
 
 static bool avl_value_gt(

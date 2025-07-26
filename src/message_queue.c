@@ -1,23 +1,23 @@
-#include <mctp/core/packet_queue.h>
+#include <mctp/core/message_queue.h>
 #include <mctp/util/queue/impl.h>
 
-typedef mctp_packet_t* queue_value_t;
+typedef mctp_message_t queue_value_t;
 
 static void queue_value_destroy(
-    queue_value_t* packet
+    queue_value_t* message
 ) {
-    mctp_pkt_destroy(*packet);
+    free(message->data);
 }
 
 
 _x_queue_value_iface(
-    mctp_pktq,
+    mctp_msgq,
     queue_value_t
 ) (
     queue_value_destroy
 )
 
 _x_queue_type_impl(
-    mctp_pktq,
+    mctp_msgq,
     queue_value_t
 )
