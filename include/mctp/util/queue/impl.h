@@ -43,7 +43,7 @@ _x_queue_value_iface_private(                        \
 static queue_node_t *queue_node_create(         \
     queue_value_t data                          \
 ) {                                             \
-    queue_node_t *node = _alloc(queue_node_t);  \
+    queue_node_t *node = zalloc(queue_node_t);  \
     node->data = data;                          \
                                                 \
     return node;                                \

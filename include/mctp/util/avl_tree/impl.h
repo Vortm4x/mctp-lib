@@ -49,7 +49,7 @@ _x_avl_tree_value_iface_private(                        \
 static avl_node_t *avl_node_create(         \
     avl_value_t data                        \
 ) {                                         \
-    avl_node_t *node = _alloc(avl_node_t);  \
+    avl_node_t *node = zalloc(avl_node_t);  \
     node->data = data;                      \
     node->height = 1;                       \
                                             \

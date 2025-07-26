@@ -9,7 +9,7 @@ mctp_packet_t *mctp_pkt_create(
     const uint8_t payload_data[],
     const size_t payload_len
 ) {
-    mctp_packet_t *packet = _alloc(mctp_packet_t);
+    mctp_packet_t *packet = zalloc(mctp_packet_t);
 
     memcpy(&packet->io.header, header, sizeof(mctp_transport_header_t));
     memcpy(packet->io.payload, payload_data, payload_len);
@@ -21,7 +21,7 @@ mctp_packet_t *mctp_pkt_create(
 mctp_packet_t *mctp_pkt_clone(
     const mctp_packet_t *packet
 ) {
-    mctp_packet_t *duplicate = _alloc(mctp_packet_t);
+    mctp_packet_t *duplicate = zalloc(mctp_packet_t);
 
     memcpy(duplicate, packet, sizeof(mctp_packet_t));
 
