@@ -12,6 +12,9 @@
 
 typedef uint8_t mctp_eid_t;
 
+#define MCTP_EID_NULL       ((mctp_eid_t)0x00)
+#define MCTP_EID_BROADCAST  ((mctp_eid_t)0xFF)
+
 typedef enum __attribute__ ((__packed__)) {
     MCTP_MSG_TYPE_CONTROL       = 0x00,
     MCTP_MSG_TYPE_PLDM          = 0x01,

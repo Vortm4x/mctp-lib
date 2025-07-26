@@ -39,6 +39,22 @@ void mctp_packet_rx(
     const mctp_packet_t *packet
 );
 
+mctp_pktq_t mctp_get_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+void mctp_drop_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+void mctp_push_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *message_ctx
+);
+
 EXTERN_C_END
 
 #endif // _MCTP_CORE_MCTP_H_

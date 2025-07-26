@@ -1,5 +1,6 @@
 #include <mctp/core/mctp.h>
 #include <mctp/core/binding.h>
+#include <mctp/core/message_queue_map.h>
 
 
 uint8_t mctp_get_message_tag()
@@ -93,23 +94,93 @@ void mctp_packet_rx(
     mctp_bus_t *bus,
     const mctp_packet_t *packet
 ) {
+    const mctp_transport_header_t *rx_header = &packet->io.header;
+
+    mctp_pktq_t rx_queue = {};
+
+    mctp_msg_ctx_t message_ctx = {
+        .eid = rx_header->source,
+        .tag = rx_header->tag,
+        .tag_owner = rx_header->tag_owner
+    };
+
+    if (!(rx_header->som && rx_header->eom))
+    {
+        rx_queue = mctp_get_rx_queue(bus, &message_ctx);
+    }
+
+    if (rx_header->som)
+    {
+        mctp_pktq_clear(&rx_queue);
+    }
+    else
+    {
+        if (packet->len != MCTP_PKT_MAX_SIZE)
+        {
+            return mctp_drop_rx_queue(bus, &message_ctx);
+        }
+
+        if (mctp_pktq_empty(&rx_queue))
+        {
+            return mctp_drop_rx_queue(bus, &message_ctx);
+        }
+
+        const mctp_packet_t *front_pkt = mctp_pktq_node_data(
+            mctp_pktq_front(&rx_queue)
+        );
+
+        if (front_pkt->io.header.pkt_seq + 1 != rx_header->pkt_seq)
+        {
+            return mctp_drop_rx_queue(bus, &message_ctx);
+        }
+    }
+
     mctp_packet_t *rx_packet = mctp_pkt_clone(packet);
+    mctp_pktq_enqueue(&rx_queue, rx_packet);
 
-    mctp_pktq_enqueue(&bus->rx.packet_queue, rx_packet);
+    if (rx_header->eom)
+    {
+        // mctp_queue_rx(bus, &rx_queue);
+    }
+    else
+    if (rx_header->som) 
+    {
+        return mctp_push_rx_queue(bus, &rx_queue, &message_ctx);
+    }
+}
 
-    // if(rx_packet->io.header.eom)
-    // {
-    //     mctp_msg_ctx_t message_ctx = {
-    //         .eid = rx_packet->io.header.source,
-    //         .tag = rx_packet->io.header.tag,
-    //         .tag_owner = rx_packet->io.header.tag_owner
-    //     };
+mctp_pktq_t mctp_get_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx
+) {
+    return mctp_msgq_map_node_data(
+        mctp_msgq_map_get(
+            bus->rx.msgq_map,
+            *message_ctx
+        )
+    );
+}
 
-    //     mctp_msgq_enqueue(
-    //         &bus->rx.message_queue,
-    //         message_ctx
-    //     );
-    // }
+void mctp_drop_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx
+) {
+    bus->rx.msgq_map = mctp_msgq_map_remove(
+        bus->rx.msgq_map,
+        *message_ctx
+    );
+}
+
+void mctp_push_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *message_ctx    
+) {
+    bus->rx.msgq_map = mctp_msgq_map_add(
+        bus->rx.msgq_map,
+        *rx_queue,
+        *message_ctx
+    );
 }
 
 void mctp_generic_header_dump(
