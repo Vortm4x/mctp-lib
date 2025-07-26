@@ -30,12 +30,16 @@ static bool avl_data_eq(
     left->context.id != right->context.id;
 }
 
-_x_avl_tree_data_iface(avl_value_t) {
-    .destroy    = avl_data_destroy,
-    .gt         = avl_data_gt,
-    .lt         = avl_data_lt,
-    .eq         = avl_data_eq
-};
+
+_x_avl_tree_data_iface(
+    mctp_msgq_map,
+    avl_value_t
+) (
+    avl_data_destroy,
+    avl_data_gt,
+    avl_data_lt,
+    avl_data_eq
+)
 
 _x_avl_tree_type_impl(
     mctp_msgq_map,

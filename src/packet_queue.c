@@ -9,9 +9,13 @@ static void queue_data_destroy(
     mctp_pkt_destroy(*data);
 }
 
-_x_queue_data_iface(queue_value_t) {
-    .destroy    = queue_data_destroy
-};
+
+_x_queue_data_iface(
+    mctp_pktq,
+    queue_value_t
+) (
+    queue_data_destroy
+)
 
 _x_queue_type_impl(
     mctp_pktq,

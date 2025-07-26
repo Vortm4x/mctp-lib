@@ -6,12 +6,24 @@
 #include <string.h>
 
 
-#define _x_queue_data_iface(queue_value_t)  \
-static const struct                         \
-{                                           \
-    void (*destroy)(queue_value_t *);       \
-}                                           \
-data_iface =
+#define _x_queue_data_iface_init(       \
+    data_destroy                        \
+) {                                     \
+    .destroy = data_destroy             \
+};
+
+#define _x_queue_data_iface_private(data_iface, queue_value_t)  \
+static const struct                                             \
+{                                                               \
+    void (*destroy)(queue_value_t *);                           \
+}                                                               \
+data_iface = _x_queue_data_iface_init
+
+#define _x_queue_data_iface(typename, _x_value_t)   \
+_x_queue_data_iface_private(                        \
+    _x_data_iface(typename),                        \
+    _x_value_t                                      \
+)
 
 
 #define _x_queue_type_impl_private( \
@@ -24,7 +36,8 @@ data_iface =
     queue_empty,                    \
     queue_enqueue,                  \
     queue_dequeue,                  \
-    queue_clear                     \
+    queue_clear,                    \
+    data_iface                      \
 )                                   \
 \
 static queue_node_t *queue_node_create(         \
@@ -39,7 +52,7 @@ static queue_node_t *queue_node_create(         \
 static void queue_node_destroy(                 \
     queue_node_t *node                          \
 ) {                                             \
-    queue_data_destroy(&node->data);            \
+    data_iface.destroy(&node->data);            \
     free(node);                                 \
 }                                               \
 \
@@ -137,7 +150,8 @@ _x_queue_type_impl_private(                         \
     _x_method(typename, empty),                     \
     _x_method(typename, enqueue),                   \
     _x_method(typename, dequeue),                   \
-    _x_method(typename, clear)                      \
+    _x_method(typename, clear),                     \
+    _x_data_iface(typename)                         \
 )
 
 #endif // _MCTP_UTIL_QUEUE_IMPL_H_

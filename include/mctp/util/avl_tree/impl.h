@@ -6,15 +6,33 @@
 #include <string.h>
 
 
-#define _x_avl_tree_data_iface(avl_value_t)                 \
-static const struct                                         \
-{                                                           \
-    void (*destroy)(avl_value_t *);                         \
-    bool (*gt)(const avl_value_t *, const avl_value_t *);   \
-    bool (*lt)(const avl_value_t *, const avl_value_t *);   \
-    bool (*eq)(const avl_value_t *, const avl_value_t *);   \
-}                                                           \
-data_iface =
+#define _x_avl_tree_data_iface_init(    \
+    data_destroy,                       \
+    data_gt,                            \
+    data_lt,                            \
+    data_eq                             \
+) {                                     \
+    .destroy    = data_destroy,         \
+    .gt         = data_gt,              \
+    .lt         = data_lt,              \
+    .eq         = data_eq               \
+};
+
+#define _x_avl_tree_data_iface_private(data_iface, avl_value_t) \
+static const struct                                             \
+{                                                               \
+    void (*destroy)(avl_value_t *);                             \
+    bool (*gt)(const avl_value_t *, const avl_value_t *);       \
+    bool (*lt)(const avl_value_t *, const avl_value_t *);       \
+    bool (*eq)(const avl_value_t *, const avl_value_t *);       \
+}                                                               \
+data_iface = _x_avl_tree_data_iface_init
+
+#define _x_avl_tree_data_iface(typename, _x_value_t)    \
+_x_avl_tree_data_iface_private(                         \
+    _x_data_iface(typename),                            \
+    _x_value_t                                          \
+)
 
 
 #define _x_avl_tree_type_impl_private(  \
@@ -24,7 +42,8 @@ data_iface =
     avl_node_data,                      \
     avl_add,                            \
     avl_remove,                         \
-    avl_get                             \
+    avl_get,                            \
+    data_iface                          \
 )                                       \
 \
 static avl_node_t *avl_node_create(         \
@@ -303,7 +322,8 @@ _x_avl_tree_type_impl_private(                      \
     _x_method(typename, node_data),                 \
     _x_method(typename, add),                       \
     _x_method(typename, remove),                    \
-    _x_method(typename, get)                        \
+    _x_method(typename, get),                       \
+    _x_data_iface(typename)                         \
 )
 
 #endif // _MCTP_UTIL_AVL_TREE_IMPL_H_
