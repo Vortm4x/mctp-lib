@@ -1,6 +1,7 @@
 #include <mctp/core/mctp.h>
 #include <mctp/core/binding.h>
 #include <mctp/core/packet_queue_map.h>
+#include <stdio.h>
 
 
 uint8_t mctp_get_message_tag()
@@ -49,6 +50,33 @@ void mctp_message_disassemble(
 
         header.pkt_seq++;
     }
+}
+
+void mctp_message_assemble(
+    mctp_message_t *message,
+    const mctp_pktq_t *rx_queue
+) {
+    FILE *message_stream = open_memstream(
+        &message->c_data,
+        &message->len
+    );
+
+    mctp_pktq_node_t *node = mctp_pktq_front(rx_queue);
+
+    while (node != NULL)
+    {
+        const mctp_packet_t *packet = mctp_pktq_node_data(node);
+
+        fwrite(
+            packet->io.payload,
+            mctp_pkt_payload_len(packet), 1,
+            message_stream
+        );
+
+        node = mctp_pktq_node_next(node);
+    }
+
+    fclose(message_stream);
 }
 
 void mctp_pktq_drain(
@@ -140,13 +168,27 @@ void mctp_packet_rx(
 
     if (rx_header->eom)
     {
-        // mctp_queue_rx(bus, &rx_queue);
+        mctp_msgq_update(bus, &rx_queue, &message_ctx);
+        return mctp_drop_rx_queue(bus, &message_ctx);
     }
     else
     if (rx_header->som) 
     {
         return mctp_push_rx_queue(bus, &rx_queue, &message_ctx);
     }
+}
+
+void mctp_msgq_update(
+    mctp_bus_t *bus,
+    const mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *message_ctx
+) {
+    mctp_message_t message = {
+        .context = *message_ctx
+    };
+
+    mctp_message_assemble(&message, rx_queue);
+    mctp_msgq_enqueue(&bus->rx.msg_queue, message);
 }
 
 mctp_pktq_t mctp_get_rx_queue(

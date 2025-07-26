@@ -6,7 +6,12 @@
 
 typedef struct
 {
-    uint8_t *data;
+    union
+    {
+        uint8_t *data;
+        char *c_data;
+    };
+    
     size_t len;
     mctp_msg_ctx_t context;
 }
