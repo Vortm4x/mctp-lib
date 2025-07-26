@@ -34,6 +34,10 @@ constexpr test_io_struct_wrapper_t<
 TEST_CRC_STRUCT = {
     .fields = {
         .packet = {
+            .transport_header = {
+                .eom = true,
+                .som = true,
+            },
             .payload = TEST_PAYLOAD_DATA
         }
     }
@@ -56,6 +60,10 @@ TEST_SERIAL_FRAME = {
             .byte_count = TEST_PKT_SIZE
         },
         .packet = {
+            .transport_header = {
+                .eom = true,
+                .som = true,
+            },
             .payload = TEST_PAYLOAD_DATA
         },
         .serial_trailer = {
@@ -93,19 +101,19 @@ TEST_CASE("serial-frame-rx") {
     mctp_bus_transport_bind(bus, binding);
 
     // Read frame
-    // serial_buff_rx(binding, TEST_SERIAL_FRAME.data, sizeof(TEST_SERIAL_FRAME.data));
-    // REQUIRE_FALSE(mctp_pktq_empty(&bus->rx.packet_queue));
+    serial_buff_rx(binding, TEST_SERIAL_FRAME.data, sizeof(TEST_SERIAL_FRAME.data));
+    REQUIRE_FALSE(mctp_msgq_empty(&bus->rx.msg_queue));
 
-    // Deque packet
-    // mctp_packet_t* rx_packet = mctp_pktq_node_data(
-    //     mctp_pktq_front(&bus->rx.packet_queue)        
-    // );
+    // Deque message
+    mctp_message_t message = mctp_msgq_node_data(
+        mctp_msgq_front(&bus->rx.msg_queue)        
+    );
 
-    // REQUIRE(rx_packet->len == TEST_PKT_SIZE);
-    // REQUIRE(memcmp(TEST_CRC_STRUCT.fields.packet.data, rx_packet->io.data, TEST_PKT_SIZE) == 0);
+    REQUIRE(message.len == TEST_PAYLOAD_SIZE);
+    REQUIRE(memcmp(TEST_CRC_STRUCT.fields.packet.payload, message.data, TEST_PAYLOAD_SIZE) == 0);
 
     // Clean up
-    // mctp_pktq_clear(&bus->rx.packet_queue);
+    mctp_msgq_clear(&bus->rx.msg_queue);
     mctp_serial_destroy(serial);
     mctp_bus_destroy(bus);
 }
