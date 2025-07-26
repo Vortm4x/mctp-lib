@@ -1,12 +1,12 @@
-#ifndef _MCTP_UTIL_AVL_TREE_IMPL_H_
-#define _MCTP_UTIL_AVL_TREE_IMPL_H_
+#ifndef _MCTP_UTIL_AVL_MAP_IMPL_H_
+#define _MCTP_UTIL_AVL_MAP_IMPL_H_
 
 #include <mctp/util/typename.h>
 #include <mctp/util/alloc.h>
 #include <string.h>
 
 
-#define _x_avl_tree_value_iface_init(   \
+#define _x_avl_map_value_iface_init(    \
     value_destroy,                      \
     value_gt,                           \
     value_lt,                           \
@@ -18,10 +18,10 @@
     .eq         = value_eq              \
 };
 
-#define _x_avl_tree_value_iface_private(    \
-    value_iface,                            \
-    avl_value_t,                            \
-    avl_key_t                               \
+#define _x_avl_map_value_iface_private( \
+    value_iface,                        \
+    avl_value_t,                        \
+    avl_key_t                           \
 ) \
 static const struct                                 \
 {                                                   \
@@ -30,21 +30,21 @@ static const struct                                 \
     bool (*lt)(const avl_key_t, const avl_key_t);   \
     bool (*eq)(const avl_key_t, const avl_key_t);   \
 }                                                   \
-value_iface = _x_avl_tree_value_iface_init
+value_iface = _x_avl_map_value_iface_init
 
-#define _x_avl_tree_value_iface(    \
-    typename,                       \
-    _x_value_t,                     \
-    _x_key_t                        \
-)                                   \
-_x_avl_tree_value_iface_private(    \
-    _x_value_iface(typename),       \
-    _x_value_t,                     \
-    _x_key_t                        \
+#define _x_avl_map_value_iface( \
+    typename,                   \
+    _x_value_t,                 \
+    _x_key_t                    \
+)                               \
+_x_avl_map_value_iface_private( \
+    _x_value_iface(typename),   \
+    _x_value_t,                 \
+    _x_key_t                    \
 )
 
 
-#define _x_avl_tree_type_impl_private(  \
+#define _x_avl_map_type_impl_private(   \
     avl_type_t,                         \
     avl_node_t,                         \
     avl_value_t,                        \
@@ -327,12 +327,12 @@ avl_node_t *avl_get(                        \
 }
 
 
-#define _x_avl_tree_type_impl(  \
+#define _x_avl_map_type_impl(   \
     typename,                   \
     _x_value_t,                 \
     _x_key_t                    \
 )                               \
-_x_avl_tree_type_impl_private(      \
+_x_avl_map_type_impl_private(       \
     _x_type_t(typename),            \
     _x_node_t(typename),            \
     _x_value_t,                     \
@@ -344,4 +344,4 @@ _x_avl_tree_type_impl_private(      \
     _x_value_iface(typename)        \
 )
 
-#endif // _MCTP_UTIL_AVL_TREE_IMPL_H_
+#endif // _MCTP_UTIL_AVL_MAP_IMPL_H_
