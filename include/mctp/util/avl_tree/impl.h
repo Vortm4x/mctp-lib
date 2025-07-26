@@ -6,31 +6,31 @@
 #include <string.h>
 
 
-#define _x_avl_tree_data_iface_init(    \
-    data_destroy,                       \
-    data_gt,                            \
-    data_lt,                            \
-    data_eq                             \
+#define _x_avl_tree_value_iface_init(   \
+    value_destroy,                      \
+    value_gt,                           \
+    value_lt,                           \
+    value_eq                            \
 ) {                                     \
-    .destroy    = data_destroy,         \
-    .gt         = data_gt,              \
-    .lt         = data_lt,              \
-    .eq         = data_eq               \
+    .destroy    = value_destroy,        \
+    .gt         = value_gt,             \
+    .lt         = value_lt,             \
+    .eq         = value_eq              \
 };
 
-#define _x_avl_tree_data_iface_private(data_iface, avl_value_t) \
-static const struct                                             \
-{                                                               \
-    void (*destroy)(avl_value_t *);                             \
-    bool (*gt)(const avl_value_t *, const avl_value_t *);       \
-    bool (*lt)(const avl_value_t *, const avl_value_t *);       \
-    bool (*eq)(const avl_value_t *, const avl_value_t *);       \
-}                                                               \
-data_iface = _x_avl_tree_data_iface_init
+#define _x_avl_tree_value_iface_private(value_iface, avl_value_t)   \
+static const struct                                                 \
+{                                                                   \
+    void (*destroy)(avl_value_t *);                                 \
+    bool (*gt)(const avl_value_t *, const avl_value_t *);           \
+    bool (*lt)(const avl_value_t *, const avl_value_t *);           \
+    bool (*eq)(const avl_value_t *, const avl_value_t *);           \
+}                                                                   \
+value_iface = _x_avl_tree_value_iface_init
 
-#define _x_avl_tree_data_iface(typename, _x_value_t)    \
-_x_avl_tree_data_iface_private(                         \
-    _x_data_iface(typename),                            \
+#define _x_avl_tree_value_iface(typename, _x_value_t)   \
+_x_avl_tree_value_iface_private(                        \
+    _x_value_iface(typename),                           \
     _x_value_t                                          \
 )
 
@@ -43,7 +43,7 @@ _x_avl_tree_data_iface_private(                         \
     avl_add,                            \
     avl_remove,                         \
     avl_get,                            \
-    data_iface                          \
+    value_iface                         \
 )                                       \
 \
 static avl_node_t *avl_node_create(         \
@@ -66,7 +66,7 @@ static void avl_node_destroy(           \
                                         \
     avl_node_destroy(node->left);       \
     avl_node_destroy(node->right);      \
-    data_iface.destroy(&node->data);    \
+    value_iface.destroy(&node->data);   \
                                         \
     free(node);                         \
 }                                       \
@@ -181,11 +181,11 @@ avl_node_t *avl_add(                                                            
     {                                                                           \
         return avl_node_create(data);                                           \
     }                                                                           \
-    else if (data_iface.lt(&data, &node->data))                                 \
+    else if (value_iface.lt(&data, &node->data))                                \
     {                                                                           \
         node->left = avl_add(node->left, data);                                 \
     }                                                                           \
-    else if (data_iface.gt(&data, &node->data))                                 \
+    else if (value_iface.gt(&data, &node->data))                                \
     {                                                                           \
         node->right = avl_add(node->right, data);                               \
     }                                                                           \
@@ -197,9 +197,9 @@ avl_node_t *avl_add(                                                            
                                                                                 \
     avl_update_height(node);                                                    \
                                                                                 \
-    if ((avl_balance(node) > 1) && !data_iface.eq(&data, &node->left->data))    \
+    if ((avl_balance(node) > 1) && !value_iface.eq(&data, &node->left->data))   \
     {                                                                           \
-        if (data_iface.gt(&data, &node->left->data))                            \
+        if (value_iface.gt(&data, &node->left->data))                           \
         {                                                                       \
             node->left = avl_rotate_left(node->left);                           \
         }                                                                       \
@@ -207,9 +207,9 @@ avl_node_t *avl_add(                                                            
         return avl_rotate_right(node);                                          \
     }                                                                           \
                                                                                 \
-    if ((avl_balance(node) < -1) && !data_iface.eq(&data, &node->right->data))  \
+    if ((avl_balance(node) < -1) && !value_iface.eq(&data, &node->right->data)) \
     {                                                                           \
-        if (data_iface.lt(&data, &node->right->data))                           \
+        if (value_iface.lt(&data, &node->right->data))                          \
         {                                                                       \
             node->right = avl_rotate_right(node->right);                        \
         }                                                                       \
@@ -228,11 +228,11 @@ avl_node_t *avl_remove(                                         \
     {                                                           \
         return NULL;                                            \
     }                                                           \
-    else if (data_iface.lt(&data, &node->data))                 \
+    else if (value_iface.lt(&data, &node->data))                \
     {                                                           \
         node->left = avl_remove(node->left, data);              \
     }                                                           \
-    else if (data_iface.gt(&data, &node->data))                 \
+    else if (value_iface.gt(&data, &node->data))                \
     {                                                           \
         node->right = avl_remove(node->right, data);            \
     }                                                           \
@@ -300,12 +300,12 @@ avl_node_t *avl_get(                        \
         return NULL;                        \
     }                                       \
                                             \
-    if (data_iface.lt(&data, &node->data))  \
+    if (value_iface.lt(&data, &node->data)) \
     {                                       \
         return avl_get(node->left, data);   \
     }                                       \
                                             \
-    if (data_iface.gt(&data, &node->data))  \
+    if (value_iface.gt(&data, &node->data)) \
     {                                       \
         return avl_get(node->right, data);  \
     }                                       \
@@ -323,7 +323,7 @@ _x_avl_tree_type_impl_private(                      \
     _x_method(typename, add),                       \
     _x_method(typename, remove),                    \
     _x_method(typename, get),                       \
-    _x_data_iface(typename)                         \
+    _x_value_iface(typename)                        \
 )
 
 #endif // _MCTP_UTIL_AVL_TREE_IMPL_H_

@@ -6,23 +6,23 @@
 #include <string.h>
 
 
-#define _x_queue_data_iface_init(       \
-    data_destroy                        \
-) {                                     \
-    .destroy = data_destroy             \
+#define _x_queue_value_iface_init(  \
+    value_destroy                   \
+) {                                 \
+    .destroy = value_destroy        \
 };
 
-#define _x_queue_data_iface_private(data_iface, queue_value_t)  \
+#define _x_queue_value_iface_private(value_iface, queue_value_t)\
 static const struct                                             \
 {                                                               \
     void (*destroy)(queue_value_t *);                           \
 }                                                               \
-data_iface = _x_queue_data_iface_init
+value_iface = _x_queue_value_iface_init
 
-#define _x_queue_data_iface(typename, _x_value_t)   \
-_x_queue_data_iface_private(                        \
-    _x_data_iface(typename),                        \
-    _x_value_t                                      \
+#define _x_queue_value_iface(typename, _x_value_t)   \
+_x_queue_value_iface_private(                        \
+    _x_value_iface(typename),                        \
+    _x_value_t                                       \
 )
 
 
@@ -37,7 +37,7 @@ _x_queue_data_iface_private(                        \
     queue_enqueue,                  \
     queue_dequeue,                  \
     queue_clear,                    \
-    data_iface                      \
+    value_iface                     \
 )                                   \
 \
 static queue_node_t *queue_node_create(         \
@@ -52,7 +52,7 @@ static queue_node_t *queue_node_create(         \
 static void queue_node_destroy(                 \
     queue_node_t *node                          \
 ) {                                             \
-    data_iface.destroy(&node->data);            \
+    value_iface.destroy(&node->data);           \
     free(node);                                 \
 }                                               \
 \
@@ -139,19 +139,19 @@ void queue_clear(               \
 }
 
 
-#define _x_queue_type_impl(typename, _x_value_t)    \
-_x_queue_type_impl_private(                         \
-    _x_type_t(typename),                            \
-    _x_node_t(typename),                            \
-    _x_value_t,                                     \
-    _x_method(typename, node_next),                 \
-    _x_method(typename, node_data),                 \
-    _x_method(typename, front),                     \
-    _x_method(typename, empty),                     \
-    _x_method(typename, enqueue),                   \
-    _x_method(typename, dequeue),                   \
-    _x_method(typename, clear),                     \
-    _x_data_iface(typename)                         \
+#define _x_queue_type_impl(typename, _x_value_t)\
+_x_queue_type_impl_private(                     \
+    _x_type_t(typename),                        \
+    _x_node_t(typename),                        \
+    _x_value_t,                                 \
+    _x_method(typename, node_next),             \
+    _x_method(typename, node_data),             \
+    _x_method(typename, front),                 \
+    _x_method(typename, empty),                 \
+    _x_method(typename, enqueue),               \
+    _x_method(typename, dequeue),               \
+    _x_method(typename, clear),                 \
+    _x_value_iface(typename)                    \
 )
 
 #endif // _MCTP_UTIL_QUEUE_IMPL_H_
