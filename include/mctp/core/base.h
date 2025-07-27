@@ -12,6 +12,9 @@
 
 typedef uint8_t mctp_eid_t;
 
+#define MCTP_EID_NULL       ((mctp_eid_t)0x00)
+#define MCTP_EID_BROADCAST  ((mctp_eid_t)0xFF)
+
 typedef enum __attribute__ ((__packed__)) {
     MCTP_MSG_TYPE_CONTROL       = 0x00,
     MCTP_MSG_TYPE_PLDM          = 0x01,
@@ -45,11 +48,16 @@ typedef union __attribute__ ((__packed__))
 }
 mctp_ver_t;
 
-typedef struct
+typedef union
 {
-    mctp_eid_t eid;
-    uint8_t tag     : 3;
-    bool tag_owner  : 1;
+    struct
+    {
+        mctp_eid_t eid;
+        uint8_t tag     : 3;
+        bool tag_owner  : 1;
+        uint8_t         : 4;
+    };
+    uint16_t id : 12;
 }
 mctp_msg_ctx_t;
 

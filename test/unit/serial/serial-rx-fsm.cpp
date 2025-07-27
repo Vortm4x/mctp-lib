@@ -18,6 +18,10 @@ constexpr test_io_struct_wrapper_t<
 >
 TEST_FRAMED_PACKET = {
     .fields = {
+        .transport_header = {
+            .eom = true,
+            .som = true,
+        },
         .payload = {
             MCTP_SERIAL_ESCAPE_FLAG,
             MCTP_SERIAL_ESCAPE_BYTE(MCTP_SERIAL_ESCAPE_FLAG),
@@ -36,6 +40,10 @@ constexpr test_io_struct_wrapper_t<
 TEST_CRC_STRUCT = {
     .fields = {
         .packet = {
+            .transport_header = {
+                .eom = true,
+                .som = true,
+            },
             .payload = {
                 MCTP_SERIAL_ESCAPE_FLAG,
                 MCTP_SERIAL_FRAME_FLAG,
@@ -80,7 +88,7 @@ TEST_CASE("serial-rx-fsm") {
                 REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_DATA);
 
                 SECTION("Receive data: valid") {
-                    // Receive packet overhead
+                    // Receive packet header
                     for(size_t i = 0; i < MCTP_PKT_MIN_SIZE; ++i)
                     {
                         mctp_serial_byte_rx(binding, TEST_FRAMED_PACKET.data[i]);
@@ -123,14 +131,14 @@ TEST_CASE("serial-rx-fsm") {
                             mctp_serial_byte_rx(binding, MCTP_SERIAL_FRAME_FLAG);
                             REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);
 
-                            REQUIRE_FALSE(mctp_pktq_empty(&bus->rx.packet_queue));
+                            REQUIRE_FALSE(mctp_msgq_empty(&bus->rx.msg_queue));
                         }
 
                         SECTION("Receive end frame flag: random byte") {
                             mctp_serial_byte_rx(binding, TEST_RANDOM_BYTE);
                             REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);
 
-                            REQUIRE(mctp_pktq_empty(&bus->rx.packet_queue));
+                            REQUIRE(mctp_msgq_empty(&bus->rx.msg_queue));
                         }
                     }
 
@@ -144,7 +152,7 @@ TEST_CASE("serial-rx-fsm") {
                         mctp_serial_byte_rx(binding, MCTP_SERIAL_FRAME_FLAG);
                         REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);
 
-                        REQUIRE(mctp_pktq_empty(&bus->rx.packet_queue));
+                        REQUIRE(mctp_msgq_empty(&bus->rx.msg_queue));
                     }
                 }
 

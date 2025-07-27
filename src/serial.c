@@ -10,7 +10,7 @@
 
 mctp_serial_t* mctp_serial_create()
 {
-    mctp_serial_t *serial = _alloc(mctp_serial_t);
+    mctp_serial_t *serial = zalloc(mctp_serial_t);
 
     serial->binding.type = MCTP_BINDING_TYPE_SERIAL;
     serial->binding.packet_tx = mctp_serial_packet_tx;

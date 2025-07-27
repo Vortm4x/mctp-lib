@@ -5,7 +5,7 @@
 
 mctp_bus_t *mctp_bus_create()
 {
-    mctp_bus_t *bus = _alloc(mctp_bus_t);
+    mctp_bus_t *bus = zalloc(mctp_bus_t);
 
     return bus;
 }

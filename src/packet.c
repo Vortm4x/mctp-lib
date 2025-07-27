@@ -9,7 +9,7 @@ mctp_packet_t *mctp_pkt_create(
     const uint8_t payload_data[],
     const size_t payload_len
 ) {
-    mctp_packet_t *packet = _alloc(mctp_packet_t);
+    mctp_packet_t *packet = zalloc(mctp_packet_t);
 
     memcpy(&packet->io.header, header, sizeof(mctp_transport_header_t));
     memcpy(packet->io.payload, payload_data, payload_len);
@@ -21,7 +21,7 @@ mctp_packet_t *mctp_pkt_create(
 mctp_packet_t *mctp_pkt_clone(
     const mctp_packet_t *packet
 ) {
-    mctp_packet_t *duplicate = _alloc(mctp_packet_t);
+    mctp_packet_t *duplicate = zalloc(mctp_packet_t);
 
     memcpy(duplicate, packet, sizeof(mctp_packet_t));
 
@@ -42,16 +42,6 @@ size_t mctp_pkt_payload_len(
     }
 
     return (packet->len - MCTP_PKT_HDR_SIZE);
-}
-
-bool mctp_pkt_message_match(
-    const mctp_packet_t *packet,
-    const mctp_msg_ctx_t *message_ctx
-) {
-    return
-        packet->io.header.source == message_ctx->eid &&
-        packet->io.header.tag == message_ctx->tag &&
-        packet->io.header.tag_owner == message_ctx->tag_owner;
 }
 
 void mctp_pkt_header_dump(

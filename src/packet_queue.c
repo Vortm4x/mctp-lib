@@ -1,9 +1,23 @@
 #include <mctp/core/packet_queue.h>
-#include <mctp/util/queue_impl.h>
+#include <mctp/util/queue/impl.h>
 
-_queue_type_impl(
+typedef mctp_packet_t* queue_value_t;
+
+static void queue_value_destroy(
+    queue_value_t* packet
+) {
+    mctp_pkt_destroy(*packet);
+}
+
+
+_x_queue_value_iface(
     mctp_pktq,
-    mctp_packet_t *,
-    mctp_pkt_destroy,
-    NULL
+    queue_value_t
+) (
+    queue_value_destroy
+)
+
+_x_queue_type_impl(
+    mctp_pktq,
+    queue_value_t
 )

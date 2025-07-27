@@ -17,6 +17,7 @@ add_library (${PROJECT_NAME} STATIC
     src/packet.c
     src/packet_queue.c
     src/message_queue.c
+    src/packet_queue_map.c
     src/crc16.c
 )
 

@@ -19,6 +19,11 @@ void mctp_message_disassemble(
     const size_t message_len
 );
 
+void mctp_message_assemble(
+    mctp_message_t *message,
+    const mctp_pktq_t *rx_queue
+);
+
 void mctp_pktq_drain(
     mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus
@@ -39,9 +44,25 @@ void mctp_packet_rx(
     const mctp_packet_t *packet
 );
 
-void mctp_pktq_rx(
+void mctp_msgq_update(
     mctp_bus_t *bus,
-    mctp_pktq_t *rx_queue,
+    const mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+mctp_pktq_t mctp_get_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+void mctp_drop_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+void mctp_push_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_pktq_t *rx_queue,
     const mctp_msg_ctx_t *message_ctx
 );
 
