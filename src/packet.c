@@ -8,6 +8,11 @@ mctp_packet_t *mctp_pkt_create(
     const uint8_t payload_data[],
     const size_t payload_len
 ) {
+    if (payload_len > MCTP_BASE_MTU)
+    {
+        return NULL;
+    }
+
     mctp_packet_t *packet = zalloc(mctp_packet_t);
 
     memcpy(&packet->io.header, header, sizeof(mctp_transport_header_t));
