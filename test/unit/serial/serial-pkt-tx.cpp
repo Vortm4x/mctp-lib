@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <unit/serial/test-common.h>
+#include <unit/dump.h>
 #include <stdio.h>
 #include <stddef.h>
 

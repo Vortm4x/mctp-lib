@@ -1,7 +1,6 @@
 #include <mctp/control/message.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 
 void mctp_ctrl_request_prepare(
@@ -63,14 +62,4 @@ void mctp_ctrl_message_prepare(
         message_data,
         message_len
     );
-}
-
-void mctp_ctrl_header_dump(
-    const mctp_ctrl_header_t *header
-) {
-    printf("MCTP Control header\n");
-    printf("instance:   0x%02X\n",  header->instance);
-    printf("datagram:   %s\n",      header->datagram ? "YES" : "NO");
-    printf("type:       %s\n",      header->request ? "request" : "response");
-    printf("command:    0x%02X\n",  header->command);
 }

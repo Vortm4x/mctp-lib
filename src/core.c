@@ -224,11 +224,3 @@ void mctp_push_rx_queue(
         *message_ctx
     );
 }
-
-void mctp_generic_header_dump(
-    const mctp_generic_header_t *header
-) {
-    printf("MCTP Generic header\n");
-    printf("integrity_check:    %s\n",      header->integrity_check ? "YES" : "NO");
-    printf("type:               0x%02X\n",  header->type);
-}

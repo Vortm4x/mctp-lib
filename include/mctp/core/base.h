@@ -1,7 +1,6 @@
 #ifndef _MCTP_CORE_BASE_H_
 #define _MCTP_CORE_BASE_H_
 
-#include <mctp/util/extern_c.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -60,14 +59,5 @@ typedef union
     uint16_t id : 12;
 }
 mctp_msg_ctx_t;
-
-
-EXTERN_C_BEGIN
-
-void mctp_generic_header_dump(
-    const mctp_generic_header_t *header
-);
-
-EXTERN_C_END
 
 #endif // _MCTP_CORE_BASE_H_
