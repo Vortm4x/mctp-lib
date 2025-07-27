@@ -66,15 +66,15 @@ static void fake_binding_packet_tx(
 
     REQUIRE(payload_len == TEST_PKT_PAYLOAD_LEN[hdr->pkt_seq]);
 
-    if(hdr->pkt_seq == TEST_PKT_SEQ_SOM) {
+    if (hdr->pkt_seq == TEST_PKT_SEQ_SOM) {
         REQUIRE(hdr->som        == true);
         REQUIRE(hdr->eom        == false);
     }
-    if(hdr->pkt_seq == TEST_PKT_SEQ_MID) {
+    if (hdr->pkt_seq == TEST_PKT_SEQ_MID) {
         REQUIRE(hdr->som        == false);
         REQUIRE(hdr->eom        == false);
     }
-    if(hdr->pkt_seq == TEST_PKT_SEQ_EOM) {
+    if (hdr->pkt_seq == TEST_PKT_SEQ_EOM) {
         REQUIRE(hdr->som        == false);
         REQUIRE(hdr->eom        == true);
     }

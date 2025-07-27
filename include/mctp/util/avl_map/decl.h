@@ -32,7 +32,7 @@ EXTERN_C_BEGIN                          \
                                         \
 avl_value_t                             \
 _x_method(typename, node_data)(         \
-    avl_node_t *node                    \
+    const avl_node_t *node              \
 );                                      \
                                         \
 avl_node_t *                            \
