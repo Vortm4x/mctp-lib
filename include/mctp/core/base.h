@@ -60,4 +60,17 @@ typedef union
 }
 mctp_msg_ctx_t;
 
+typedef struct
+{
+    mctp_msg_ctx_t context;
+    union
+    {
+        uint8_t const* data;
+        char *c_data;
+    };
+
+    size_t len;
+}
+mctp_message_t;
+
 #endif // _MCTP_CORE_BASE_H_

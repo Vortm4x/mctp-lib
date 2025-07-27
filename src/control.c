@@ -55,11 +55,11 @@ void mctp_ctrl_message_prepare(
     memcpy(message_data, header, sizeof(mctp_ctrl_header_t));
     memcpy(message_data + sizeof(mctp_ctrl_header_t), payload_data, payload_len);
 
-    mctp_message_disassemble(
-        tx_queue,
-        bus,
-        message_ctx,
-        message_data,
-        message_len
-    );
+    const mctp_message_t message = {
+        .context = *message_ctx,
+        .data = message_data,
+        .len = message_len
+    };
+
+    mctp_message_disassemble(bus, &message, tx_queue);
 }

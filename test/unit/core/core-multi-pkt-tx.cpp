@@ -104,19 +104,21 @@ TEST_CASE("core-multi-pkt-tx") {
     mctp_bus_transport_bind(bus, &fake_binding);
 
     // Message setup
-    const mctp_msg_ctx_t message_ctx = {
-        .eid = TEST_EID_DEST,
-        .tag = mctp_get_message_tag(),
-        .tag_owner = true
+    const mctp_message_t message = {
+        .context = {
+            .eid = TEST_EID_DEST,
+            .tag = mctp_get_message_tag(),
+            .tag_owner = true
+        },
+        .data = TEST_PAYLOAD_DATA,
+        .len = TEST_PAYLOAD_LEN
     };
 
     // Fill tx queue
     mctp_message_disassemble(
-        &tx_queue,
         bus,
-        &message_ctx,
-        TEST_PAYLOAD_DATA,
-        TEST_PAYLOAD_LEN
+        &message,
+        &tx_queue
     );
 
     // Drain tx queue
