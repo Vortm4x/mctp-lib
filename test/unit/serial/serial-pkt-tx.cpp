@@ -134,6 +134,7 @@ TEST_CASE("serial-pkt-tx") {
     REQUIRE(memcmp(TEST_SERIAL_FRAME.data, TEST_RX_CTX.buffer, TEST_RX_CTX.size) == 0);
 
     // Clean up
+    free(TEST_RX_CTX.c_buffer);
     mctp_serial_destroy(serial);
     mctp_bus_destroy(bus);
 }

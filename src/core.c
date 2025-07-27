@@ -145,7 +145,11 @@ void mctp_packet_rx(
 ) {
     const mctp_transport_header_t *rx_header = &packet->io.header;
 
-    mctp_pktq_t rx_queue = {};
+    if (rx_header->version  != MCTP_PKT_HDR_VER
+     || rx_header->dest     != bus->eid)
+    {
+        return;
+    }
 
     mctp_msg_ctx_t message_ctx = {
         .eid = rx_header->source,
@@ -153,23 +157,41 @@ void mctp_packet_rx(
         .tag_owner = rx_header->tag_owner
     };
 
-    if (!(rx_header->som && rx_header->eom))
-    {
-        rx_queue = mctp_get_rx_queue(bus, &message_ctx);
-    }
-
     if (rx_header->som)
     {
-        mctp_pktq_clear(&rx_queue);
+
+        if (rx_header->eom)
+        {
+            mctp_pktq_t rx_queue = {};
+            mctp_pktq_enqueue(&rx_queue, mctp_pkt_clone(packet));
+
+            mctp_msgq_update(bus, &rx_queue, &message_ctx);
+            mctp_pktq_clear(&rx_queue);
+        }
+        else
+        {
+            if (packet->len != MCTP_PKT_MAX_SIZE)
+            {
+                return mctp_drop_rx_queue(bus, &message_ctx);
+            }
+
+            mctp_pktq_t rx_queue = mctp_get_rx_queue(bus, &message_ctx);
+            mctp_pktq_clear(&rx_queue);
+
+            mctp_pktq_enqueue(&rx_queue, mctp_pkt_clone(packet));
+            mctp_push_rx_queue(bus, &rx_queue, &message_ctx);
+        }
     }
     else
     {
-        if (packet->len != MCTP_PKT_MAX_SIZE)
-        {
-            return mctp_drop_rx_queue(bus, &message_ctx);
-        }
+        mctp_pktq_t rx_queue = mctp_get_rx_queue(bus, &message_ctx);
 
         if (mctp_pktq_empty(&rx_queue))
+        {
+            return;
+        }
+
+        if (packet->len != MCTP_PKT_MAX_SIZE && !rx_header->eom)
         {
             return mctp_drop_rx_queue(bus, &message_ctx);
         }
@@ -177,25 +199,20 @@ void mctp_packet_rx(
         const mctp_packet_t *front_pkt = mctp_pktq_node_data(
             mctp_pktq_front(&rx_queue)
         );
+        const uint8_t expected_pkt_seq = (front_pkt->io.header.pkt_seq + 1) % 4;
 
-        if (front_pkt->io.header.pkt_seq + 1 != rx_header->pkt_seq)
+        if (rx_header->pkt_seq != expected_pkt_seq)
         {
             return mctp_drop_rx_queue(bus, &message_ctx);
         }
-    }
 
-    mctp_packet_t *rx_packet = mctp_pkt_clone(packet);
-    mctp_pktq_enqueue(&rx_queue, rx_packet);
+        mctp_pktq_enqueue(&rx_queue, mctp_pkt_clone(packet));
 
-    if (rx_header->eom)
-    {
-        mctp_msgq_update(bus, &rx_queue, &message_ctx);
-        return mctp_drop_rx_queue(bus, &message_ctx);
-    }
-    else
-    if (rx_header->som) 
-    {
-        return mctp_push_rx_queue(bus, &rx_queue, &message_ctx);
+        if (rx_header->eom)
+        {
+            mctp_msgq_update(bus, &rx_queue, &message_ctx);
+            mctp_drop_rx_queue(bus, &message_ctx);
+        }
     }
 }
 
