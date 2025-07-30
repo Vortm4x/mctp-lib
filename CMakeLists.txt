@@ -10,14 +10,6 @@ set(C_STANDARD_REQUIRED TRUE)
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library (${PROJECT_NAME} STATIC
-    src/core.c
-    src/control.c
-    src/serial.c
-    src/bus.c
-    src/packet.c
-    src/packet_queue.c
-    src/message_queue.c
-    src/packet_queue_map.c
     src/crc16.c
 )
 
