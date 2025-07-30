@@ -8,15 +8,18 @@ include(import_catch2.cmake)
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 
-add_executable(${PROJECT_NAME}
+add_executable(
+    ${PROJECT_NAME}
     stub.cpp
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(
+    ${PROJECT_NAME} PRIVATE
     ${PROJECT_ROOT}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(
+    ${PROJECT_NAME} PRIVATE
     mctp
     Catch2::Catch2WithMain
 )
