@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <unit/dump.h>
 
 #include <mctp/control/message.h>
 #include <mctp/core/bus.h>
@@ -56,20 +57,22 @@ TEST_CASE("core-single-pkt-tx") {
     mctp_bus_set_eid(bus, TEST_EID_SOURCE);
     mctp_bus_transport_bind(bus, &fake_binding);
 
-    // Message setup
-    const mctp_msg_ctx_t message_ctx = {
-        .eid = TEST_EID_DEST,
-        .tag = mctp_get_message_tag(),
-        .tag_owner = true
+    // Message 
+    const mctp_message_t message = {
+        .context = {
+            .eid = TEST_EID_DEST,
+            .tag = mctp_get_message_tag(),
+            .tag_owner = true
+        },
+        .data = TEST_PKT_PAYLOAD_DATA,
+        .len = TEST_PKT_PAYLOAD_LEN
     };
 
     // Fill tx queue
     mctp_message_disassemble(
-        &tx_queue,
         bus,
-        &message_ctx,
-        TEST_PKT_PAYLOAD_DATA,
-        TEST_PKT_PAYLOAD_LEN
+        &message,
+        &tx_queue
     );
 
     // Drain tx queue

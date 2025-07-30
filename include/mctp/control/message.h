@@ -83,10 +83,6 @@ void mctp_ctrl_message_prepare(
     const size_t payload_len
 );
 
-void mctp_ctrl_header_dump(
-    const mctp_ctrl_header_t *header
-);
-
 EXTERN_C_END
 
 #endif // _MCTP_CONTROL_MESSAGE_H_

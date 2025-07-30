@@ -84,7 +84,7 @@ static void avl_node_destroy(           \
 }                                       \
 \
 static avl_height_t avl_height( \
-    avl_node_t *node            \
+    const avl_node_t *node      \
 ) {                             \
     if (node == NULL)           \
     {                           \
@@ -108,7 +108,7 @@ static void avl_update_height(                              \
 }                                                           \
 \
 static avl_height_t avl_balance(                                \
-    avl_node_t *node                                            \
+    const avl_node_t *node                                      \
 ) {                                                             \
     if (node == NULL)                                           \
     {                                                           \
@@ -172,7 +172,7 @@ static avl_node_t *avl_find_min(    \
 }                                   \
 \
 avl_value_t avl_node_data(                      \
-    avl_node_t *node                            \
+    const avl_node_t *node                      \
 ) {                                             \
     if (node == NULL)                           \
     {                                           \

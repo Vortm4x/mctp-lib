@@ -4,9 +4,9 @@
 typedef mctp_message_t queue_value_t;
 
 static void queue_value_destroy(
-    queue_value_t* message
+    queue_value_t *message
 ) {
-    free(message->data);
+    free(message->c_data);
 }
 
 

@@ -8,6 +8,16 @@ include(import_catch2.cmake)
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 
+add_library(${PROJECT_NAME}-dump
+    unit/dump.cpp
+)
+target_include_directories(${PROJECT_NAME}-dump PRIVATE
+    ${PROJECT_ROOT}
+)
+target_link_libraries(${PROJECT_NAME}-dump PUBLIC
+    mctp
+)
+
 add_executable(${PROJECT_NAME}
 # SERIAL
     unit/serial/serial-rx-fsm.cpp
@@ -25,6 +35,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     mctp
+    ${PROJECT_NAME}-dump
     Catch2::Catch2WithMain
 )
 

@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <unit/dump.h>
 
 #include <mctp/control/message.h>
 #include <mctp/core/bus.h>
@@ -65,15 +66,15 @@ static void fake_binding_packet_tx(
 
     REQUIRE(payload_len == TEST_PKT_PAYLOAD_LEN[hdr->pkt_seq]);
 
-    if(hdr->pkt_seq == TEST_PKT_SEQ_SOM) {
+    if (hdr->pkt_seq == TEST_PKT_SEQ_SOM) {
         REQUIRE(hdr->som        == true);
         REQUIRE(hdr->eom        == false);
     }
-    if(hdr->pkt_seq == TEST_PKT_SEQ_MID) {
+    if (hdr->pkt_seq == TEST_PKT_SEQ_MID) {
         REQUIRE(hdr->som        == false);
         REQUIRE(hdr->eom        == false);
     }
-    if(hdr->pkt_seq == TEST_PKT_SEQ_EOM) {
+    if (hdr->pkt_seq == TEST_PKT_SEQ_EOM) {
         REQUIRE(hdr->som        == false);
         REQUIRE(hdr->eom        == true);
     }
@@ -103,19 +104,21 @@ TEST_CASE("core-multi-pkt-tx") {
     mctp_bus_transport_bind(bus, &fake_binding);
 
     // Message setup
-    const mctp_msg_ctx_t message_ctx = {
-        .eid = TEST_EID_DEST,
-        .tag = mctp_get_message_tag(),
-        .tag_owner = true
+    const mctp_message_t message = {
+        .context = {
+            .eid = TEST_EID_DEST,
+            .tag = mctp_get_message_tag(),
+            .tag_owner = true
+        },
+        .data = TEST_PAYLOAD_DATA,
+        .len = TEST_PAYLOAD_LEN
     };
 
     // Fill tx queue
     mctp_message_disassemble(
-        &tx_queue,
         bus,
-        &message_ctx,
-        TEST_PAYLOAD_DATA,
-        TEST_PAYLOAD_LEN
+        &message,
+        &tx_queue
     );
 
     // Drain tx queue

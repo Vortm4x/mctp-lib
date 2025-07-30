@@ -127,14 +127,6 @@ void mctp_serial_byte_rx(
 	const uint8_t byte
 );
 
-void mctp_serial_header_dump(
-    const mctp_serial_header_t *header
-);
-
-void mctp_serial_trailer_dump(
-    const mctp_serial_trailer_t *trailer
-);
-
 EXTERN_C_END
 
 #endif // _MCTP_BINDING_SERIAL_H_

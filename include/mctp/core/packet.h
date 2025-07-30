@@ -61,10 +61,6 @@ size_t mctp_pkt_payload_len(
     const mctp_packet_t *packet
 );
 
-void mctp_pkt_header_dump(
-    const mctp_transport_header_t *header
-);
-
 EXTERN_C_END
 
 #endif // _MCTP_CORE_PACKET_H_

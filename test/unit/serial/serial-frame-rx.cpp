@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include <mctp/binding/serial.h>
+#include <mctp/core/mctp.h>
 #include <mctp/core/bus.h>
 #include <mctp/core/packet.h>
 #include <mctp/util/crc16.h>
@@ -35,6 +36,8 @@ TEST_CRC_STRUCT = {
     .fields = {
         .packet = {
             .transport_header = {
+                .version = MCTP_PKT_HDR_VER,
+                .dest = TEST_EID_SOURCE,
                 .eom = true,
                 .som = true,
             },
@@ -61,6 +64,8 @@ TEST_SERIAL_FRAME = {
         },
         .packet = {
             .transport_header = {
+                .version = MCTP_PKT_HDR_VER,
+                .dest = TEST_EID_SOURCE,
                 .eom = true,
                 .som = true,
             },

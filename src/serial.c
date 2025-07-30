@@ -5,7 +5,6 @@
 #include <mctp/util/alloc.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 
 mctp_serial_t* mctp_serial_create()
@@ -241,24 +240,4 @@ void mctp_serial_byte_rx(
         }
         break;
     }
-}
-
-void mctp_serial_header_dump(
-    const mctp_serial_header_t *header
-) {
-    printf("MCTP Serial binding header\n");
-    printf("frame flag: 0x%02X\n",  header->framing_flag);
-    printf("revision:   0x%02X\n",  header->revision);
-    printf("byte count: 0x%dX\n",  header->byte_count);
-    printf("\n");
-}
-
-void mctp_serial_trailer_dump(
-    const mctp_serial_trailer_t *trailer
-) {
-    printf("MCTP Serial binding trailer\n");
-    printf("FCS high:   0x%02X\n",  trailer->fcs_high);
-    printf("FCS low:    0x%02X\n",  trailer->fcs_low);
-    printf("frame flag: 0x%02X\n",  trailer->framing_flag);
-    printf("\n");
 }

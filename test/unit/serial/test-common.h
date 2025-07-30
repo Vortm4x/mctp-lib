@@ -1,3 +1,6 @@
+#ifndef _MCTP_TEST_UNIT_SERIAL_TEST_COMMON_H_
+#define _MCTP_TEST_UNIT_SERIAL_TEST_COMMON_H_
+
 #include <mctp/core/packet.h>
 #include <mctp/binding/serial.h>
 
@@ -42,3 +45,5 @@ struct __attribute__ ((__packed__)) test_serial_frame_t
     test_framed_packet_t<escaped_payload_size> packet;
     mctp_serial_trailer_t serial_trailer;
 };
+
+#endif // _MCTP_TEST_UNIT_SERIAL_TEST_COMMON_H_

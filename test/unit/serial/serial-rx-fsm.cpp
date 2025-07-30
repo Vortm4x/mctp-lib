@@ -2,6 +2,7 @@
 #include <unit/serial/test-common.h>
 
 #include <mctp/binding/serial.h>
+#include <mctp/core/mctp.h>
 #include <mctp/core/bus.h>
 #include <mctp/core/packet.h>
 #include <mctp/util/crc16.h>
@@ -19,6 +20,8 @@ constexpr test_io_struct_wrapper_t<
 TEST_FRAMED_PACKET = {
     .fields = {
         .transport_header = {
+            .version = MCTP_PKT_HDR_VER,
+            .dest = TEST_EID_SOURCE,
             .eom = true,
             .som = true,
         },
@@ -41,6 +44,8 @@ TEST_CRC_STRUCT = {
     .fields = {
         .packet = {
             .transport_header = {
+                .version = MCTP_PKT_HDR_VER,
+                .dest = TEST_EID_SOURCE,
                 .eom = true,
                 .som = true,
             },
@@ -132,6 +137,8 @@ TEST_CASE("serial-rx-fsm") {
                             REQUIRE(serial->rx.state == MCTP_SERIAL_RX_STATE_SYNC_START);
 
                             REQUIRE_FALSE(mctp_msgq_empty(&bus->rx.msg_queue));
+
+                            mctp_msgq_clear(&bus->rx.msg_queue);
                         }
 
                         SECTION("Receive end frame flag: random byte") {

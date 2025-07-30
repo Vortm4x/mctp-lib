@@ -4,6 +4,29 @@
 #include <stdio.h>
 
 
+static void mctp_msgq_update(
+    mctp_bus_t *bus,
+    const mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+static mctp_pktq_t mctp_get_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+static void mctp_drop_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+static void mctp_push_rx_queue(
+    mctp_bus_t *bus,
+    const mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *message_ctx
+);
+
+
 uint8_t mctp_get_message_tag()
 {
     static uint8_t msg_tag = 0;
@@ -12,32 +35,30 @@ uint8_t mctp_get_message_tag()
 }
 
 void mctp_message_disassemble(
-    mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
-    const mctp_msg_ctx_t *message_ctx,
-    const uint8_t message_data[],
-    const size_t message_len
+    const mctp_message_t *message,
+    mctp_pktq_t *tx_queue
 ) {
     mctp_transport_header_t header = {
         .version = MCTP_PKT_HDR_VER,
-        .dest = message_ctx->eid,
+        .dest = message->context.eid,
         .source = bus->eid,
-        .tag = message_ctx->tag,
-        .tag_owner = message_ctx->tag_owner,
+        .tag = message->context.tag,
+        .tag_owner = message->context.tag_owner,
     };
 
     const size_t packet_count =
-        (message_len / MCTP_BASE_MTU) +
-        (message_len % MCTP_BASE_MTU ? 1 : 0);
+        (message->len / MCTP_BASE_MTU) +
+        (message->len % MCTP_BASE_MTU ? 1 : 0);
 
     for(size_t i = 0; i < packet_count; ++i)
     {
         header.som = (i == 0);
         header.eom = (i + 1 == packet_count);
 
-        const uint8_t *payload_data = &message_data[MCTP_BASE_MTU * i];
+        const uint8_t *payload_data = &message->data[MCTP_BASE_MTU * i];
         const size_t payload_len = header.eom
-            ? message_len - MCTP_BASE_MTU * i
+            ? message->len - MCTP_BASE_MTU * i
             : MCTP_BASE_MTU;
 
         mctp_packet_t *packet = mctp_pkt_create(
@@ -124,7 +145,11 @@ void mctp_packet_rx(
 ) {
     const mctp_transport_header_t *rx_header = &packet->io.header;
 
-    mctp_pktq_t rx_queue = {};
+    if (rx_header->version  != MCTP_PKT_HDR_VER
+     || rx_header->dest     != bus->eid)
+    {
+        return;
+    }
 
     mctp_msg_ctx_t message_ctx = {
         .eid = rx_header->source,
@@ -132,23 +157,41 @@ void mctp_packet_rx(
         .tag_owner = rx_header->tag_owner
     };
 
-    if (!(rx_header->som && rx_header->eom))
-    {
-        rx_queue = mctp_get_rx_queue(bus, &message_ctx);
-    }
-
     if (rx_header->som)
     {
-        mctp_pktq_clear(&rx_queue);
+
+        if (rx_header->eom)
+        {
+            mctp_pktq_t rx_queue = {};
+            mctp_pktq_enqueue(&rx_queue, mctp_pkt_clone(packet));
+
+            mctp_msgq_update(bus, &rx_queue, &message_ctx);
+            mctp_pktq_clear(&rx_queue);
+        }
+        else
+        {
+            if (packet->len != MCTP_PKT_MAX_SIZE)
+            {
+                return mctp_drop_rx_queue(bus, &message_ctx);
+            }
+
+            mctp_pktq_t rx_queue = mctp_get_rx_queue(bus, &message_ctx);
+            mctp_pktq_clear(&rx_queue);
+
+            mctp_pktq_enqueue(&rx_queue, mctp_pkt_clone(packet));
+            mctp_push_rx_queue(bus, &rx_queue, &message_ctx);
+        }
     }
     else
     {
-        if (packet->len != MCTP_PKT_MAX_SIZE)
-        {
-            return mctp_drop_rx_queue(bus, &message_ctx);
-        }
+        mctp_pktq_t rx_queue = mctp_get_rx_queue(bus, &message_ctx);
 
         if (mctp_pktq_empty(&rx_queue))
+        {
+            return;
+        }
+
+        if (packet->len != MCTP_PKT_MAX_SIZE && !rx_header->eom)
         {
             return mctp_drop_rx_queue(bus, &message_ctx);
         }
@@ -156,29 +199,24 @@ void mctp_packet_rx(
         const mctp_packet_t *front_pkt = mctp_pktq_node_data(
             mctp_pktq_front(&rx_queue)
         );
+        const uint8_t expected_pkt_seq = (front_pkt->io.header.pkt_seq + 1) % 4;
 
-        if (front_pkt->io.header.pkt_seq + 1 != rx_header->pkt_seq)
+        if (rx_header->pkt_seq != expected_pkt_seq)
         {
             return mctp_drop_rx_queue(bus, &message_ctx);
         }
-    }
 
-    mctp_packet_t *rx_packet = mctp_pkt_clone(packet);
-    mctp_pktq_enqueue(&rx_queue, rx_packet);
+        mctp_pktq_enqueue(&rx_queue, mctp_pkt_clone(packet));
 
-    if (rx_header->eom)
-    {
-        mctp_msgq_update(bus, &rx_queue, &message_ctx);
-        return mctp_drop_rx_queue(bus, &message_ctx);
-    }
-    else
-    if (rx_header->som) 
-    {
-        return mctp_push_rx_queue(bus, &rx_queue, &message_ctx);
+        if (rx_header->eom)
+        {
+            mctp_msgq_update(bus, &rx_queue, &message_ctx);
+            mctp_drop_rx_queue(bus, &message_ctx);
+        }
     }
 }
 
-void mctp_msgq_update(
+static void mctp_msgq_update(
     mctp_bus_t *bus,
     const mctp_pktq_t *rx_queue,
     const mctp_msg_ctx_t *message_ctx
@@ -191,7 +229,7 @@ void mctp_msgq_update(
     mctp_msgq_enqueue(&bus->rx.msg_queue, message);
 }
 
-mctp_pktq_t mctp_get_rx_queue(
+static mctp_pktq_t mctp_get_rx_queue(
     mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx
 ) {
@@ -203,7 +241,7 @@ mctp_pktq_t mctp_get_rx_queue(
     );
 }
 
-void mctp_drop_rx_queue(
+static void mctp_drop_rx_queue(
     mctp_bus_t *bus,
     const mctp_msg_ctx_t *message_ctx
 ) {
@@ -213,7 +251,7 @@ void mctp_drop_rx_queue(
     );
 }
 
-void mctp_push_rx_queue(
+static void mctp_push_rx_queue(
     mctp_bus_t *bus,
     const mctp_pktq_t *rx_queue,
     const mctp_msg_ctx_t *message_ctx    
@@ -223,12 +261,4 @@ void mctp_push_rx_queue(
         *rx_queue,
         *message_ctx
     );
-}
-
-void mctp_generic_header_dump(
-    const mctp_generic_header_t *header
-) {
-    printf("MCTP Generic header\n");
-    printf("integrity_check:    %s\n",      header->integrity_check ? "YES" : "NO");
-    printf("type:               0x%02X\n",  header->type);
 }

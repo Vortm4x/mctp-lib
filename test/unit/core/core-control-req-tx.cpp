@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <unit/dump.h>
 
 #include <mctp/control/message.h>
 #include <mctp/control/request.h>
