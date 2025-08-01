@@ -2,8 +2,8 @@
 #define _MCTP_BINDING_SERIAL_P_H_
 
 #include <mctp/binding/serial.h>
-#include <mctp/core/binding_p.h>
-#include <mctp/core/packet_p.h>
+#include <mctp/core/p_binding.h>
+#include <mctp/core/p_packet.h>
 #include <mctp/util/packed.h>
 
 

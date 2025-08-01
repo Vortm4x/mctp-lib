@@ -1,5 +1,5 @@
-#include <mctp/core/bus_p.h>
-#include <mctp/core/binding_p.h>
+#include <mctp/core/p_bus.h>
+#include <mctp/core/p_binding.h>
 #include <mctp/core/base.h>
 #include <mctp/util/alloc.h>
 
@@ -15,8 +15,6 @@ mctp_bus_t *mctp_bus_create(
 void mctp_bus_destroy(
     mctp_bus_t *bus
 ) {
-    if (bus == NULL) return;
-
     free(bus);
 }
 

@@ -1,4 +1,4 @@
-#include <mctp/core/packet_p.h>
+#include <mctp/core/p_packet.h>
 #include <mctp/util/alloc.h>
 
 

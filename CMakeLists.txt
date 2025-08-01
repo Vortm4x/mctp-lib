@@ -14,8 +14,11 @@ option(BUILD_TESTING "Enable testing feature" ON)
 
 add_library (
     ${PROJECT_NAME} SHARED
+    src/serial.c
     src/crc16.c
     src/bus.c
+    src/packet.c
+    src/core.c
 )
 
 target_include_directories (

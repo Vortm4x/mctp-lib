@@ -3,6 +3,7 @@
 
 #include <mctp/core/bus.h>
 
+
 typedef struct mctp_bus_t
 {
 	mctp_eid_t eid;

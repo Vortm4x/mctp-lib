@@ -1,8 +1,9 @@
-#include <mctp/binding/serial_p.h>
+#include <mctp/binding/p_serial.h>
 #include <mctp/util/alloc.h>
 #include <mctp/util/crc16.h>
 #include <mctp/util/buffer.h>
 #include <mctp/util/container_of.h>
+#include <string.h>
 
 
 static void mctp_serial_packet_tx(
@@ -19,12 +20,14 @@ static void mctp_serial_frame_tx(
 
 static void mctp_serial_escaped_buffer_tx(
     const mctp_serial_t *serial,
-    const buffer_t buffer
+    const uint8_t buffer_data[],
+    const size_t buffer_len
 );
 
 static void mctp_serial_buffer_tx(
     const mctp_serial_t *serial,
-    const buffer_t buffer
+    const uint8_t buffer_data[],
+    const size_t buffer_len
 );
 
 static void mctp_serial_byte_tx(
@@ -77,45 +80,28 @@ static void mctp_serial_frame_tx(
 	const mctp_pkt_t *packet,
     const mctp_serial_trail_t *trailer
 ) {
-    mctp_serial_buffer_tx(
-        serial,
-        (buffer_t) {
-            header->data,
-            sizeof(header->data)
-        }
-    );
-    mctp_serial_escaped_buffer_tx(
-        serial,
-        (buffer_t) {
-            packet->io.data,
-            packet->len
-        }
-    );
-    mctp_serial_buffer_tx(
-        serial,
-        (buffer_t) {
-            trailer->data,
-            sizeof(trailer->data)
-        }
-    );
+    mctp_serial_buffer_tx(serial, header->data, sizeof(header->data));
+    mctp_serial_escaped_buffer_tx(serial, packet->io.data, packet->len);
+    mctp_serial_buffer_tx(serial, trailer->data, sizeof(trailer->data));
 }
 
 static void mctp_serial_escaped_buffer_tx(
     const mctp_serial_t *serial,
-    const buffer_t buffer
+    const uint8_t buffer_data[],
+    const size_t buffer_len
 ) {
-    for (size_t i = 0; i < buffer.len; ++i)
+    for (size_t i = 0; i < buffer_len; ++i)
     {
-        switch (buffer.data[i])
+        switch (buffer_data[i])
         {
             case MCTP_SERIAL_FRAME_FLAG:
             case MCTP_SERIAL_ESCAPE_FLAG:
                 mctp_serial_byte_tx(serial, MCTP_SERIAL_ESCAPE_FLAG);
-                mctp_serial_byte_tx(serial, MCTP_SERIAL_ESCAPE_BYTE(buffer.data[i]));
+                mctp_serial_byte_tx(serial, MCTP_SERIAL_ESCAPE_BYTE(buffer_data[i]));
                 break;
 
             default:
-                mctp_serial_byte_tx(serial, buffer.data[i]);
+                mctp_serial_byte_tx(serial, buffer_data[i]);
                 break;
         }
     }
@@ -123,11 +109,12 @@ static void mctp_serial_escaped_buffer_tx(
 
 static void mctp_serial_buffer_tx(
     const mctp_serial_t *serial,
-    const buffer_t buffer
+    const uint8_t buffer_data[],
+    const size_t buffer_len
 ) {
-    for (size_t i = 0; i < buffer.len; ++i)
+    for (size_t i = 0; i < buffer_len; ++i)
     {
-        mctp_serial_byte_tx(serial, buffer.data[i]);
+        mctp_serial_byte_tx(serial, buffer_data[i]);
     }
 }
 
@@ -172,7 +159,7 @@ mctp_binding_t *mctp_serial_get_binding(
 ) {
     if (serial == NULL) return NULL;
 
-    return serial->binding;
+    return &serial->binding;
 }
 
 static void mctp_serial_reset_rx_ctx(
@@ -204,7 +191,7 @@ void mctp_serial_byte_rx(
     const mctp_binding_t *binding,
 	const uint8_t byte
 ) {
-    if (binding == NULL) return NULL;
+    if (binding == NULL) return;
 
     mctp_serial_t *serial = container_of(
         binding, mctp_serial_t, binding

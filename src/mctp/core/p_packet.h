@@ -44,10 +44,12 @@ mctp_io_pkt_t;
 static_assert(sizeof(mctp_io_pkt_t) == MCTP_PKT_MAX_SIZE);
 
 
+typedef uint8_t mctp_pkt_size_t;
+
 typedef struct mctp_pkt_t
 {
     mctp_io_pkt_t io;
-    size_t len;
+    mctp_pkt_size_t len;
 }
 mctp_pkt_t;
 
