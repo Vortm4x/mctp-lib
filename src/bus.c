@@ -32,7 +32,8 @@ void mctp_bus_set_eid(
 mctp_eid_t mctp_bus_get_eid(
     mctp_bus_t *bus
 ) {
-    if (bus == NULL) {
+    if (bus == NULL)
+    {
         return MCTP_EID_NULL;
     }
 

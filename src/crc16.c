@@ -48,7 +48,7 @@ uint16_t crc16_calc_block(
 	const uint8_t block[],
 	const size_t block_len
 ) {
-    for(size_t i = 0; i < block_len; ++i)
+    for (size_t i = 0; i < block_len; ++i)
     {
         crc = crc16_calc_byte(crc, block[i]);
     }
