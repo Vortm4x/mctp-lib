@@ -23,6 +23,12 @@ target_include_directories (
     ${PROJECT_ROOT}/include
 )
 
+target_include_directories (
+    ${PROJECT_NAME} PRIVATE
+    ${PROJECT_ROOT}/src
+)
+
+
 set(SANITIZER
     -fsanitize=address
     -fno-omit-frame-pointer

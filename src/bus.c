@@ -1,5 +1,5 @@
-#include <mctp/core/bus.h>
-#include <mctp/core/binding.h>
+#include <mctp/core/bus_p.h>
+#include <mctp/core/binding_p.h>
 #include <mctp/core/base.h>
 #include <mctp/util/alloc.h>
 
@@ -27,6 +27,16 @@ void mctp_bus_set_eid(
     if (bus == NULL) return;
 
     bus->eid = eid;
+}
+
+mctp_eid_t mctp_bus_get_eid(
+    mctp_bus_t *bus
+) {
+    if (bus == NULL) {
+        return MCTP_EID_NULL;
+    }
+
+    return bus->eid;
 }
 
 void mctp_bus_transport_bind(
