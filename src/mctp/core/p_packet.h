@@ -61,7 +61,7 @@ mctp_pkt_t *mctp_pkt_create(
 );
 
 void mctp_pkt_destroy(
-    mctp_pkt_t *packet
+    mctp_pkt_t **packet_ref
 );
 
 EXTERN_C_END

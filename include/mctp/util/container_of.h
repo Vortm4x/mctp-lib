@@ -11,7 +11,7 @@
             (uint8_t*)(                 \
                 (                       \
                     const typeof(       \
-                        ((type *)NULL   \
+                        ((type *)0      \
                     )->member) *        \
                 )                       \
                 (                       \

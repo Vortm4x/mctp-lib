@@ -3,6 +3,7 @@
 
 #include <mctp/util/typename.h>
 #include <mctp/util/extern_c.h>
+#include <mctp/util/forward_decl.h>
 #include <stdbool.h>
 
 
@@ -13,19 +14,8 @@
     queue_value_t                   \
 )                                   \
                                     \
-typedef struct queue_node_t         \
-{                                   \
-    queue_value_t data;             \
-    struct queue_node_t *next;      \
-}                                   \
-queue_node_t;                       \
-                                    \
-typedef struct                      \
-{                                   \
-    queue_node_t *front;            \
-    queue_node_t *back;             \
-}                                   \
-queue_type_t;                       \
+forward_decl(queue_node_t);         \
+forward_decl(queue_type_t);         \
                                     \
                                     \
 EXTERN_C_BEGIN                      \

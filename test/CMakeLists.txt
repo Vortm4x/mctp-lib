@@ -10,7 +10,7 @@ set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(
     ${PROJECT_NAME}
-    stub.cpp
+    unit/util/util-container-of.cpp
 )
 
 target_include_directories(

@@ -40,6 +40,20 @@ _x_queue_value_iface_private(                        \
     value_iface                     \
 )                                   \
 \
+typedef struct queue_node_t     \
+{                               \
+    queue_value_t data;         \
+    struct queue_node_t *next;  \
+}                               \
+queue_node_t;                   \
+                                \
+typedef struct queue_type_t     \
+{                               \
+    queue_node_t *front;        \
+    queue_node_t *back;         \
+}                               \
+queue_type_t;                   \
+\
 static queue_node_t *queue_node_create(         \
     queue_value_t data                          \
 ) {                                             \
