@@ -1,8 +1,9 @@
 #ifndef _MCTP_CORE_BINDING_P_H_
 #define _MCTP_CORE_BINDING_P_H_
 
-#include <mctp/util/forward_decl.h>
 #include <mctp/core/medium_info.h>
+#include <mctp/util/forward_decl.h>
+#include <mctp/util/extern_c.h>
 
 forward_decl(mctp_binding_t);
 forward_decl(mctp_bus_t);
@@ -24,9 +25,13 @@ typedef struct mctp_binding_t
 mctp_binding_t;
 
 
+EXTERN_C_BEGIN
+
 void mctp_binding_set_bus(
     mctp_binding_t *binding,
     mctp_bus_t *bus
 );
+
+EXTERN_C_END
 
 #endif // _MCTP_CORE_BINDING_P_H_

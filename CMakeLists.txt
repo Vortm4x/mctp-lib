@@ -20,6 +20,7 @@ add_library (
     src/binding.c
     src/packet.c
     src/core.c
+    src/message.c
 )
 
 target_include_directories (
