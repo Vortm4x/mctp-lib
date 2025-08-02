@@ -17,6 +17,7 @@ add_library (
     src/serial.c
     src/crc16.c
     src/bus.c
+    src/binding.c
     src/packet.c
     src/core.c
 )

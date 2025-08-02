@@ -43,23 +43,25 @@ void mctp_bus_transport_bind(
     mctp_binding_t *binding
 ) {
     if (bus == NULL) return;
-    if (binding == NULL) return;
 
-    if (bus->binding != NULL) return;
-    if (binding->bus != NULL) return;
-
-    binding->bus = bus;
-    bus->binding = binding;
+    if (binding != NULL)
+    {
+        bus->binding = binding;
+        mctp_binding_set_bus(binding, bus);
+    }
+    else 
+    {
+        mctp_bus_transport_unbind(bus);
+    }
 }
 
 void mctp_bus_transport_unbind(
     mctp_bus_t *bus
 ) {
     if (bus == NULL) return;
-    bus->binding = NULL;
 
     mctp_binding_t *binding = bus->binding;
 
-    if (binding == NULL) return; 
-    binding->bus = NULL;
+    mctp_binding_set_bus(binding, NULL);
+    bus->binding = NULL;
 }

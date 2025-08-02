@@ -23,4 +23,10 @@ typedef struct mctp_binding_t
 }
 mctp_binding_t;
 
+
+void mctp_binding_set_bus(
+    mctp_binding_t *binding,
+    mctp_bus_t *bus
+);
+
 #endif // _MCTP_CORE_BINDING_P_H_

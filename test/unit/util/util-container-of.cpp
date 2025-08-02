@@ -6,9 +6,7 @@
 typedef struct test_struct_t
 {
     uint32_t : 32;
-    uint32_t : 32;
     uint32_t member;
-    uint32_t : 32;
     uint32_t : 32;
 }
 test_struct_t;
