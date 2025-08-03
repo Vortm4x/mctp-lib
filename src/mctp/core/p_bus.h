@@ -3,6 +3,7 @@
 
 #include <mctp/core/bus.h>
 #include <mctp/core/p_pktq_map.h>
+#include <mctp/core/p_message_queue.h>
 
 typedef struct mctp_bus_t
 {
@@ -10,7 +11,8 @@ typedef struct mctp_bus_t
     mctp_binding_t *binding;
     struct
     {
-        mctp_pktq_map_t pktq_map;
+        mctp_pktq_map_t *pktq_map;
+        mctp_msgq_t *msgq;
     }
     rx; 
 }

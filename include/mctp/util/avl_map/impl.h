@@ -41,6 +41,7 @@ _x_avl_map_value_iface_private( \
     avl_value_t,                        \
     avl_key_t,                          \
     avl_node_data,                      \
+    avl_destroy,                        \
     avl_add,                            \
     avl_remove,                         \
     avl_get,                            \
@@ -77,10 +78,7 @@ static void avl_node_destroy(           \
         return;                         \
     }                                   \
                                         \
-    avl_node_destroy(node->left);       \
-    avl_node_destroy(node->right);      \
     value_iface.destroy(&node->data);   \
-                                        \
     free(node);                         \
 }                                       \
 \
@@ -185,6 +183,16 @@ avl_value_t avl_node_data(                      \
                                                 \
     return node->data;                          \
 }                                               \
+\
+void avl_destroy(               \
+    avl_node_t *node            \
+) {                             \
+    if (node == NULL) return;   \
+                                \
+    avl_destroy(node->left);    \
+    avl_destroy(node->right);   \
+    avl_node_destroy(node);     \
+}                               \
 \
 avl_node_t *avl_add(                                            \
     avl_node_t *node,                                           \
@@ -339,6 +347,7 @@ _x_avl_map_type_impl_private(       \
     _x_value_t,                     \
     _x_key_t,                       \
     _x_method(typename, node_data), \
+    _x_method(typename, destroy),   \
     _x_method(typename, add),       \
     _x_method(typename, remove),    \
     _x_method(typename, get),       \

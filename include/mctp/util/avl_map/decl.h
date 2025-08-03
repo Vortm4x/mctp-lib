@@ -18,13 +18,18 @@ typedef int8_t avl_height_t;
 )                                       \
                                         \
 forward_decl(avl_node_t);               \
-typedef avl_node_t *avl_type_t;         \
+typedef avl_node_t avl_type_t;          \
                                         \
 EXTERN_C_BEGIN                          \
                                         \
 avl_value_t                             \
 _x_method(typename, node_data)(         \
     const avl_node_t *node              \
+);                                      \
+                                        \
+void                                    \
+_x_method(typename, destroy)(           \
+    avl_node_t *node                    \
 );                                      \
                                         \
 avl_node_t *                            \

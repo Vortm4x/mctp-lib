@@ -6,12 +6,20 @@ typedef mctp_pktq_t *avl_value_t;
 typedef mctp_msg_ctx_raw_t avl_key_t;
     
 
+static void avl_value_destroy(
+    avl_value_t *pkt_queue_ref
+) {
+    if (pkt_queue_ref == NULL) return;
+
+    mctp_pktq_destroy(*pkt_queue_ref);
+}
+
 _x_avl_map_value_iface(
     mctp_pktq_map,
     avl_value_t,
     avl_key_t
 ) (
-    mctp_pktq_destroy
+    avl_value_destroy
 )
 
 _x_avl_map_type_impl(

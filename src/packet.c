@@ -25,10 +25,9 @@ mctp_pkt_t *mctp_pkt_clone(
 }
 
 void mctp_pkt_destroy(
-    mctp_pkt_t **packet_ref
+    mctp_pkt_t *packet
 ) {
-    if (packet_ref == NULL) return;
+    if (packet == NULL) return;
 
-    free(*packet_ref);
-    *packet_ref = NULL;
+    free(packet);
 }

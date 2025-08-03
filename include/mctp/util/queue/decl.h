@@ -37,7 +37,7 @@ _x_method(typename, create)(        \
                                     \
 void                                \
 _x_method(typename, destroy)(       \
-    queue_type_t **queue_ref        \
+    queue_type_t *queue             \
 );                                  \
                                     \
 queue_node_t *                      \

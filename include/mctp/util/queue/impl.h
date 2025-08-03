@@ -107,13 +107,12 @@ queue_type_t *queue_create(                     \
 }                                               \
 \
 void queue_destroy(                 \
-    queue_type_t **queue_ref        \
+    queue_type_t *queue             \
 ) {                                 \
-    if (queue_ref == NULL) return;  \
+    if (queue == NULL) return;      \
                                     \
-    queue_clear(*queue_ref);        \
-    free(*queue_ref);               \
-    *queue_ref = NULL;              \
+    queue_clear(queue);             \
+    free(queue);                    \
 }                                   \
 \
 queue_node_t *queue_front(      \

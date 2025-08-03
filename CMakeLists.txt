@@ -21,6 +21,9 @@ add_library (
     src/packet.c
     src/core.c
     src/message.c
+    src/packet_queue.c
+    src/pktq_map.c
+    src/message_queue.c
 )
 
 target_include_directories (

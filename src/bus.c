@@ -15,6 +15,8 @@ mctp_bus_t *mctp_bus_create(
 void mctp_bus_destroy(
     mctp_bus_t *bus
 ) {
+    mctp_pktq_map_destroy(bus->rx.pktq_map);
+    mctp_msgq_destroy(bus->rx.msgq);
     free(bus);
 }
 

@@ -3,6 +3,7 @@
 #include <mctp/core/p_binding.h>
 #include <mctp/core/p_packet.h>
 #include <mctp/core/p_message.h>
+#include <mctp/core/p_message_queue.h>
 #include <mctp/core/packet_queue.h>
 
 
@@ -91,7 +92,7 @@ void mctp_packet_rx(
             mctp_pktq_enqueue(rx_queue, mctp_pkt_clone(packet));
 
             mctp_msgq_update(bus, rx_queue, &ctx);
-            mctp_pktq_destroy(&rx_queue);
+            mctp_pktq_destroy(rx_queue);
         }
         else
         {
@@ -194,6 +195,5 @@ static void mctp_msgq_update(
     };
 
     mctp_message_assemble(rx_queue, &message.data, &message.len);
-    if (bus) {}
-    // mctp_msgq_enqueue(&bus->rx.msg_queue, message);
+    mctp_msgq_enqueue(bus->rx.msgq, message);
 }
