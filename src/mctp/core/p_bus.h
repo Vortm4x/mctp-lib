@@ -5,6 +5,7 @@
 #include <mctp/core/p_pktq_map.h>
 #include <mctp/core/p_message_queue.h>
 
+
 typedef struct mctp_bus_t
 {
 	mctp_eid_t eid;
@@ -14,7 +15,7 @@ typedef struct mctp_bus_t
         mctp_pktq_map_t *pktq_map;
         mctp_msgq_t *msgq;
     }
-    rx; 
+    rx;
 }
 mctp_bus_t;
 

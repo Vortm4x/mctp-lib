@@ -20,4 +20,25 @@ typedef uint16_t mctp_msg_ctx_raw_t;
   | (mctp_msg_ctx_raw_t)(ctx.tag        << 8)   \
   | (mctp_msg_ctx_raw_t)(ctx.tag_owner  << 11)
 
+
+EXTERN_C_BEGIN
+
+void mctp_message_disassemble(
+    mctp_pktq_t *tx_queue,
+    const uint8_t *msg_data,
+    const size_t msg_len,
+    const mctp_eid_t source,
+    const mctp_eid_t dest,
+    const uint8_t msg_tag,
+    const bool tag_owner
+);
+
+void mctp_message_assemble(
+    const mctp_pktq_t *rx_queue,
+    uint8_t **message_data,
+    size_t *message_len
+);
+
+EXTERN_C_END
+
 #endif // _MCTP_CORE_P_MESSAGE_H_

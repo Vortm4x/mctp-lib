@@ -1,4 +1,0 @@
-#ifndef _MCTP_CORE_PACKET_H_
-#define _MCTP_CORE_PACKET_H_
-
-#endif // _MCTP_CORE_PACKET_H_

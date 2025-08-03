@@ -1,4 +1,0 @@
-#ifndef _MCTP_CORE_BINDING_H_
-#define _MCTP_CORE_BINDING_H_
-
-#endif // _MCTP_CORE_BINDING_H_

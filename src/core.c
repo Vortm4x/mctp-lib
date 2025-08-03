@@ -1,4 +1,4 @@
-#include <mctp/core/p_mctp.h>
+#include <mctp/core/mctp.h>
 #include <mctp/core/p_bus.h>
 #include <mctp/core/p_binding.h>
 #include <mctp/core/p_packet.h>

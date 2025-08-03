@@ -1,7 +1,7 @@
 #ifndef _MCTP_CORE_PACKET_P_H_
 #define _MCTP_CORE_PACKET_P_H_
 
-#include <mctp/core/packet.h>
+#include <mctp/core/p_packet.h>
 #include <mctp/core/base.h>
 #include <mctp/util/packed.h>
 #include <mctp/util/extern_c.h>

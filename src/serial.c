@@ -1,7 +1,6 @@
 #include <mctp/binding/p_serial.h>
 #include <mctp/util/alloc.h>
 #include <mctp/util/crc16.h>
-#include <mctp/util/buffer.h>
 #include <mctp/util/container_of.h>
 #include <string.h>
 
