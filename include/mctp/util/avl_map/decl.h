@@ -17,7 +17,7 @@ typedef int8_t avl_height_t;
     avl_key_t                           \
 )                                       \
                                         \
-forward_decl(queue_node_t);             \
+forward_decl(avl_node_t);               \
 typedef avl_node_t *avl_type_t;         \
                                         \
 EXTERN_C_BEGIN                          \

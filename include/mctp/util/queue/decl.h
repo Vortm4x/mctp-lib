@@ -30,6 +30,16 @@ _x_method(typename, node_data)(     \
     const queue_node_t *node        \
 );                                  \
                                     \
+queue_type_t *                      \
+_x_method(typename, create)(        \
+    void                            \
+);                                  \
+                                    \
+void                                \
+_x_method(typename, destroy)(       \
+    queue_type_t **queue_ref        \
+);                                  \
+                                    \
 queue_node_t *                      \
 _x_method(typename, front)(         \
     const queue_type_t *queue       \

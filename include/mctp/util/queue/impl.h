@@ -32,6 +32,8 @@ _x_queue_value_iface_private(                        \
     queue_value_t,                  \
     queue_node_next,                \
     queue_node_data,                \
+    queue_create,                   \
+    queue_destroy,                  \
     queue_front,                    \
     queue_empty,                    \
     queue_enqueue,                  \
@@ -94,6 +96,25 @@ queue_value_t queue_node_data(                      \
                                                     \
     return node->data;                              \
 }                                                   \
+\
+                                                \
+queue_type_t *queue_create(                     \
+    void                                        \
+) {                                             \
+    queue_type_t *queue = zalloc(queue_type_t); \
+                                                \
+    return queue;                               \
+}                                               \
+\
+void queue_destroy(                 \
+    queue_type_t **queue_ref        \
+) {                                 \
+    if (queue_ref == NULL) return;  \
+                                    \
+    queue_clear(*queue_ref);        \
+    free(*queue_ref);               \
+    *queue_ref = NULL;              \
+}                                   \
 \
 queue_node_t *queue_front(      \
     const queue_type_t *queue   \
@@ -160,6 +181,8 @@ _x_queue_type_impl_private(                     \
     _x_value_t,                                 \
     _x_method(typename, node_next),             \
     _x_method(typename, node_data),             \
+    _x_method(typename, create),                \
+    _x_method(typename, destroy),               \
     _x_method(typename, front),                 \
     _x_method(typename, empty),                 \
     _x_method(typename, enqueue),               \
