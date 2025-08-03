@@ -2,29 +2,22 @@
 #define _MCTP_CORE_P_MESSAGE_H_
 
 #include <mctp/core/message.h>
+#include <mctp/util/packed.h>
 
+typedef uint16_t mctp_msg_ctx_raw_t;
 
-typedef struct mctp_msg_ctx_t
-{
-    mctp_eid_t eid  : 8;
-    uint8_t tag     : 3;
-    bool to         : 1;
-}
-mctp_msg_ctx_t;
+#define MCTP_MSG_CTX_REMOTE_EID(raw) \
+    (mctp_eid_t)((raw >> 0) & 0xFF)
 
+#define MCTP_MSG_CTX_TAG(raw) \
+    (uint8_t)((raw >> 8) & 0x3)
 
-#define MCTP_MSG_CTX_ID(ctx)                \
-    (mctp_msg_ctx_id_t)(ctx.eid << 0)   |   \
-    (mctp_msg_ctx_id_t)(ctx.tag << 8)   |   \
-    (mctp_msg_ctx_id_t)(ctx.eid << 13)  |
+#define MCTP_MSG_CTX_TAG_OWNER(raw) \
+    (bool)((raw >> 11) & 1)
 
-#define MCTP_MSG_CTX_EID(ctx_id) \
-    (mctp_eid_t)((ctx_id >> 0) & 0xFF) 
-
-#define MCTP_MSG_CTX_TAG(ctx_id) \
-    (uint8_t)((ctx_id >> 8) & 0x7) 
-
-#define MCTP_MSG_CTX_TO(ctx_id) \
-    (bool)((ctx_id >> 13) & 0x1) 
+#define MCTP_MSG_CTX_RAW(ctx)                   \
+    (mctp_msg_ctx_raw_t)(ctx.remote_eid << 0)   \
+  | (mctp_msg_ctx_raw_t)(ctx.tag        << 8)   \
+  | (mctp_msg_ctx_raw_t)(ctx.tag_owner  << 11)
 
 #endif // _MCTP_CORE_P_MESSAGE_H_

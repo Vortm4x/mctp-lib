@@ -4,13 +4,13 @@
 #include <mctp/util/avl_map/decl.h>
 #include <mctp/core/base.h>
 #include <mctp/core/packet_queue.h>
-#include <mctp/core/message.h>
+#include <mctp/core/p_message.h>
 
 
 _x_avl_map_type_decl(
     mctp_pktq_map,
     mctp_pktq_t *,
-    mctp_msg_ctx_id_t
+    mctp_msg_ctx_raw_t
 )
 
 #endif // _MCTP_CORE_PACKET_QUEUE_MAP_H_

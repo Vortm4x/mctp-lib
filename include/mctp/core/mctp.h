@@ -23,6 +23,11 @@ void mctp_packet_tx(
     const mctp_pkt_t *packet
 );
 
+void mctp_packet_rx(
+    mctp_bus_t *bus,
+    const mctp_pkt_t *packet
+);
+
 EXTERN_C_END
 
 #endif // _MCTP_CORE_MCTP_H_

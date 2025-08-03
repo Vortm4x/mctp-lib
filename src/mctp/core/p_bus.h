@@ -10,7 +10,7 @@ typedef struct mctp_bus_t
     mctp_binding_t *binding;
     struct
     {
-        mctp_pktq_map_t queue_map;
+        mctp_pktq_map_t pktq_map;
     }
     rx; 
 }

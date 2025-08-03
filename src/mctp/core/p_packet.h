@@ -64,6 +64,10 @@ mctp_pkt_t *mctp_pkt_create(
     void
 );
 
+mctp_pkt_t *mctp_pkt_clone(
+    const mctp_pkt_t *packet
+);
+
 void mctp_pkt_destroy(
     mctp_pkt_t **packet_ref
 );
