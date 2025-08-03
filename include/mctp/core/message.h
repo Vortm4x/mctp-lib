@@ -20,6 +20,14 @@ typedef struct mctp_msg_ctx_t
 }
 mctp_msg_ctx_t;
 
+typedef struct mctp_msg_t
+{
+    uint8_t *data;
+    size_t len;
+    mctp_msg_ctx_t ctx;
+}
+mctp_msg_t;
+
 
 EXTERN_C_BEGIN
 
@@ -48,6 +56,12 @@ void mctp_message_disassemble(
     const mctp_eid_t dest,
     const uint8_t msg_tag,
     const bool tag_owner
+);
+
+void mctp_message_assemble(
+    const mctp_pktq_t *rx_queue,
+    uint8_t **message_data,
+    size_t *message_len
 );
 
 EXTERN_C_END

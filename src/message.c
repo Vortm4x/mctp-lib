@@ -3,6 +3,7 @@
 #include <mctp/core/p_bus.h>
 #include <mctp/core/packet_queue.h>
 #include <string.h>
+#include <stdlib.h>
 
 
 void mctp_fill_send_queue(
@@ -27,7 +28,6 @@ void mctp_fill_send_queue(
     );
 }
 
-
 void mctp_fill_reply_queue(
     mctp_pktq_t *tx_queue,
     const mctp_bus_t *bus,
@@ -48,7 +48,6 @@ void mctp_fill_reply_queue(
         MCTP_TAG_OWNER_REPLY
     );
 }
-
 
 void mctp_message_disassemble(
     mctp_pktq_t *tx_queue,
@@ -93,5 +92,41 @@ void mctp_message_disassemble(
         mctp_pktq_enqueue(tx_queue, packet);
 
         header.seq_num++;
+    }
+}
+
+void mctp_message_assemble(
+    const mctp_pktq_t *rx_queue,
+    uint8_t **message_data,
+    size_t *message_len
+) {
+    mctp_pktq_node_t *node = NULL;
+    uint8_t *curr_data = NULL;
+
+    *message_len = 0;
+    node = mctp_pktq_front(rx_queue);
+
+    while (node != NULL)
+    {
+        const mctp_pkt_t *packet = mctp_pktq_node_data(node);
+
+        *message_len += packet->len;
+
+        node = mctp_pktq_node_next(node);
+    }
+
+    *message_data = malloc(*message_len);
+    curr_data = *message_data;
+    node = mctp_pktq_front(rx_queue);
+
+    while (node != NULL)
+    {
+        const mctp_pkt_t *packet = mctp_pktq_node_data(node);
+        const mctp_pkt_size_t body_len = packet->len - MCTP_PKT_HDR_SIZE;
+
+        memcpy(curr_data, packet->io.body, body_len);
+        curr_data += body_len;
+
+        node = mctp_pktq_node_next(node);
     }
 }

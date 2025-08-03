@@ -22,11 +22,11 @@ static void mctp_push_rx_queue(
     const mctp_msg_ctx_raw_t raw_ctx
 );
 
-// static void mctp_msgq_update(
-//     mctp_bus_t *bus,
-//     const mctp_pktq_t *rx_queue,
-//     const mctp_msg_ctx_raw_t raw_ctx
-// );
+static void mctp_msgq_update(
+    mctp_bus_t *bus,
+    const mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *msg_ctx
+);
 
 
 void mctp_pktq_tx(
@@ -90,7 +90,7 @@ void mctp_packet_rx(
             mctp_pktq_t *rx_queue = mctp_pktq_create();
             mctp_pktq_enqueue(rx_queue, mctp_pkt_clone(packet));
 
-            // mctp_msgq_update(bus, &rx_queue, &message_ctx);
+            mctp_msgq_update(bus, rx_queue, &ctx);
             mctp_pktq_destroy(&rx_queue);
         }
         else
@@ -143,7 +143,7 @@ void mctp_packet_rx(
 
         if (rx_header->eom)
         {
-            // mctp_msgq_update(bus, rx_queue, raw_ctx);
+            mctp_msgq_update(bus, rx_queue, &ctx);
             mctp_drop_rx_queue(bus, raw_ctx);
             return;
         }
@@ -182,4 +182,18 @@ static void mctp_push_rx_queue(
         rx_queue,
         raw_ctx
     );
+}
+
+static void mctp_msgq_update(
+    mctp_bus_t *bus,
+    const mctp_pktq_t *rx_queue,
+    const mctp_msg_ctx_t *msg_ctx
+) {
+    mctp_msg_t message = {
+        .ctx = *msg_ctx
+    };
+
+    mctp_message_assemble(rx_queue, &message.data, &message.len);
+    if (bus) {}
+    // mctp_msgq_enqueue(&bus->rx.msg_queue, message);
 }
