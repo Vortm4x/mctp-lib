@@ -1,5 +1,5 @@
-#ifndef _MCTP_UTIL_CRC16_H_
-#define _MCTP_UTIL_CRC16_H_
+#ifndef _MCTP_UTIL_CRC16_CCIT_H_
+#define _MCTP_UTIL_CRC16_CCIT_H_
 
 #include <stdint.h>
 #include <stddef.h>
@@ -16,12 +16,12 @@
 
 EXTERN_C_BEGIN
 
-uint16_t crc16_calc_byte(
+uint16_t crc16_ccit_calc_byte(
     uint16_t crc,
     const uint8_t byte
 );
 
-uint16_t crc16_calc_block(
+uint16_t crc16_ccit_calc_block(
     uint16_t crc,
     const uint8_t block[],
     const size_t block_len
@@ -29,4 +29,4 @@ uint16_t crc16_calc_block(
 
 EXTERN_C_END
 
-#endif // _MCTP_UTIL_CRC16_H_
+#endif // _MCTP_UTIL_CRC16_CCIT_H_

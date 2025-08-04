@@ -15,7 +15,7 @@ option(BUILD_TESTING "Enable testing feature" ON)
 add_library (
     ${PROJECT_NAME} SHARED
     src/serial.c
-    src/crc16.c
+    src/crc16_ccitt.c
     src/bus.c
     src/binding.c
     src/packet.c
@@ -53,6 +53,7 @@ target_compile_options(
     -Wmissing-prototypes
     -Wshadow
     -pedantic
+    -save-temps
     $<${PROJECT_DEBUG}:${SANITIZER}>
 )
 

@@ -1,6 +1,6 @@
 #include <mctp/binding/p_serial.h>
 #include <mctp/util/alloc.h>
-#include <mctp/util/crc16.h>
+#include <mctp/util/crc16_ccitt.h>
 #include <mctp/util/container_of.h>
 #include <string.h>
 
@@ -56,9 +56,9 @@ static void mctp_serial_packet_tx(
 
     uint16_t crc = MCTP_CRC16_INIT;
 
-    crc = crc16_calc_byte(crc, header.revision);
-    crc = crc16_calc_byte(crc, header.byte_count);
-    crc = crc16_calc_block(crc, packet->io.data, packet->len);
+    crc = crc16_ccit_calc_byte(crc, header.revision);
+    crc = crc16_ccit_calc_byte(crc, header.byte_count);
+    crc = crc16_ccit_calc_block(crc, packet->io.data, packet->len);
 
     const mctp_serial_trail_t trailer = {
         .fcs_high = MCTP_CRC16_GET_HIGH(crc),
@@ -172,7 +172,7 @@ static void mctp_serial_push_rx_data(
     mctp_serial_t *serial,
 	const uint8_t byte
 ) {
-    serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
+    serial->rx.fcs_calc = crc16_ccit_calc_byte(serial->rx.fcs_calc, byte);
     serial->rx.packet.io.data[serial->rx.next_pkt_byte] = byte;
     serial->rx.next_pkt_byte++;
 
@@ -212,7 +212,7 @@ void mctp_serial_byte_rx(
         {
             switch (byte) {
                 case MCTP_SERIAL_REVISION:
-                    serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
+                    serial->rx.fcs_calc = crc16_ccit_calc_byte(serial->rx.fcs_calc, byte);
                     serial->rx.state = MCTP_SERIAL_RX_STATE_PKT_LEN;
                 break;
 
@@ -230,7 +230,7 @@ void mctp_serial_byte_rx(
         {
             if (MCTP_PKT_MIN_SIZE <= byte && byte <= MCTP_PKT_MAX_SIZE)
             {
-                serial->rx.fcs_calc = crc16_calc_byte(serial->rx.fcs_calc, byte);
+                serial->rx.fcs_calc = crc16_ccit_calc_byte(serial->rx.fcs_calc, byte);
                 serial->rx.packet.len = byte;
                 serial->rx.next_pkt_byte = 0;
                 serial->rx.state = MCTP_SERIAL_RX_STATE_DATA;

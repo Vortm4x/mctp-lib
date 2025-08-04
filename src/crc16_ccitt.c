@@ -1,4 +1,4 @@
-#include <mctp/util/crc16.h>
+#include <mctp/util/crc16_ccitt.h>
 
 const uint16_t crc16_table[256] = {
 	0x0000, 0x1189, 0x2312, 0x329B, 0x4624, 0x57AD, 0x6536, 0x74BF,
@@ -36,21 +36,21 @@ const uint16_t crc16_table[256] = {
 };
 
 
-uint16_t crc16_calc_byte(
+uint16_t crc16_ccit_calc_byte(
 	uint16_t crc,
 	const uint8_t byte
 ) {
     return (crc >> 8) ^ crc16_table[(crc ^ byte) & 0xFF];
 }
 
-uint16_t crc16_calc_block(
+uint16_t crc16_ccit_calc_block(
 	uint16_t crc,
 	const uint8_t block[],
 	const size_t block_len
 ) {
     for (size_t i = 0; i < block_len; ++i)
     {
-        crc = crc16_calc_byte(crc, block[i]);
+        crc = crc16_ccit_calc_byte(crc, block[i]);
     }
 
     return crc;
