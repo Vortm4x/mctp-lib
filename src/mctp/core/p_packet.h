@@ -23,15 +23,15 @@ typedef packed_struct
     bool eom            : 1;
     bool som            : 1;
 }
-mctp_pkt_hdr_t;
+mctp_hdr_t;
 
-static_assert(sizeof(mctp_pkt_hdr_t) == 4);
+static_assert(sizeof(mctp_hdr_t) == 4);
 
 
 typedef uint8_t mctp_pkt_size_t;
 
 
-#define MCTP_PKT_HDR_SIZE ((mctp_pkt_size_t)sizeof(mctp_pkt_hdr_t))
+#define MCTP_PKT_HDR_SIZE ((mctp_pkt_size_t)sizeof(mctp_hdr_t))
 #define MCTP_PKT_MAX_SIZE ((mctp_pkt_size_t)(MCTP_PKT_HDR_SIZE + MCTP_BASE_MTU))
 #define MCTP_PKT_MIN_SIZE ((mctp_pkt_size_t)(MCTP_PKT_HDR_SIZE))
 
@@ -40,7 +40,7 @@ typedef packed_union
 {
     packed_struct
     {
-        mctp_pkt_hdr_t header;
+        mctp_hdr_t header;
         uint8_t body[MCTP_BASE_MTU];
     };
     uint8_t data[MCTP_PKT_MAX_SIZE];

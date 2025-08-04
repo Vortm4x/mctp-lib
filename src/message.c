@@ -60,7 +60,7 @@ void mctp_message_disassemble(
 ) {
     if (tx_queue == NULL) return;
 
-    mctp_pkt_hdr_t header = {
+    mctp_hdr_t header = {
         .version    = MCTP_PKT_HDR_VER,
         .dest       = dest,
         .source     = source,

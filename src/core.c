@@ -69,7 +69,7 @@ void mctp_packet_rx(
     mctp_bus_t *bus,
     const mctp_pkt_t *packet
 ) {
-    const mctp_pkt_hdr_t *rx_header = &packet->io.header;
+    const mctp_hdr_t *rx_header = &packet->io.header;
 
     if (rx_header->version  != MCTP_PKT_HDR_VER
      || rx_header->dest     != bus->eid)
