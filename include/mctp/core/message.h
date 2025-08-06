@@ -15,8 +15,8 @@ forward_decl(mctp_bus_t);
 typedef struct mctp_msg_ctx_t
 {
     mctp_eid_t remote_eid;
-    uint8_t tag : 3;
-    bool tag_owner : 1;
+    uint8_t tag     : 3;
+    bool tag_owner  : 1;
 }
 mctp_msg_ctx_t;
 

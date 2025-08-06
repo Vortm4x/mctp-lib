@@ -4,7 +4,6 @@
 #include <mctp/binding/serial.h>
 #include <mctp/core/p_binding.h>
 #include <mctp/core/p_packet.h>
-#include <mctp/util/packed.h>
 
 
 #define MCTP_SERIAL_REVISION        ((uint8_t)0x01)
@@ -14,9 +13,9 @@
 #define MCTP_SERIAL_ESCAPE_BYTE(byte) (byte ^ ((uint8_t)0x20))
 
 
-typedef packed_union
+typedef union
 {
-    packed_struct
+    struct
     {
         uint8_t frame_flag;
         uint8_t revision;
@@ -29,9 +28,9 @@ mctp_serial_hdr_t;
 static_assert(sizeof(mctp_serial_hdr_t) == 3);
 
 
-typedef packed_union
+typedef union
 {
-    packed_struct
+    struct
     {
         uint8_t fcs_high;
         uint8_t fcs_low;

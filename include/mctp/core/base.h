@@ -2,6 +2,7 @@
 #define _MCTP_CORE_BASE_H_
 
 #include <mctp/util/packed.h>
+#include <mctp/util/bitfield.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -32,13 +33,24 @@ typedef packed_enum
 mctp_msg_type_t;
 
 
-typedef packed_struct
-{
-    mctp_msg_type_t type : 7;
-    bool integrity_check : 1;
-}
-mctp_base_hdr;
+#define MCTP_BASE_MASK_IC           0x01
+#define MCTP_BASE_MASK_MSG_TYPE     0x7F
 
-static_assert(sizeof(mctp_base_hdr) == 1);
+#define MCTP_BASE_OFFSET_IC         7
+#define MCTP_BASE_OFFSET_MSG_TYPE   0
+
+
+#define MCTP_BASE_GET_IC(flags) \
+    (bool)BITFIELD_GET(flags, MCTP_BASE_OFFSET_IC, MCTP_BASE_MASK_IC)
+
+#define MCTP_BASE_GET_MSG_TYPE(flags) \
+    (mctp_msg_type_t)BITFIELD_GET(flags, MCTP_BASE_OFFSET_MSG_TYPE, MCTP_BASE_MASK_MSG_TYPE)
+
+
+#define MCTP_BASE_SET_IC(flags, val) \
+    (uint8_t)BITFIELD_SET(flags, val, MCTP_BASE_OFFSET_IC, MCTP_BASE_MASK_IC)
+
+#define MCTP_BASE_SET_MSG_TYPE(flags, val) \
+    (uint8_t)BITFIELD_SET(flags, val, MCTP_BASE_OFFSET_MSG_TYPE, MCTP_BASE_MASK_MSG_TYPE)
 
 #endif // _MCTP_CORE_BASE_H_
