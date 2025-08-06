@@ -2,7 +2,6 @@
 #define _MCTP_CORE_P_MESSAGE_H_
 
 #include <mctp/core/message.h>
-#include <mctp/util/packed.h>
 
 typedef uint16_t mctp_msg_ctx_raw_t;
 

@@ -1,9 +1,8 @@
 #ifndef _MCTP_CORE_MEDIUM_INFO_H_
 #define _MCTP_CORE_MEDIUM_INFO_H_
 
-#include <mctp/util/packed.h>
 
-typedef packed_enum
+typedef enum
 {
     MCTP_BINDING_TYPE_RESERVED  = 0x00,
     MCTP_BINDING_TYPE_SMBUS     = 0x01,
@@ -14,7 +13,7 @@ typedef packed_enum
 }
 mctp_binding_type_t;
 
-typedef packed_enum
+typedef enum
 {
     MCTP_PHYSICAL_MEDIUM_UNSPEC                 = 0x00,
     MCTP_PHYSICAL_MEDIUM_SMBUS_20_100KHZ        = 0x01,
@@ -47,7 +46,7 @@ typedef packed_enum
 }
 mctp_physical_medium_t;
 
-typedef packed_enum
+typedef enum
 {
     MCTP_HOST_IF_KCS        = 0x02,
     MCTP_HOST_UART_8250     = 0x03,

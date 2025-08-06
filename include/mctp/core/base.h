@@ -1,7 +1,6 @@
 #ifndef _MCTP_CORE_BASE_H_
 #define _MCTP_CORE_BASE_H_
 
-#include <mctp/util/packed.h>
 #include <mctp/util/bitfield.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -18,7 +17,7 @@ typedef uint8_t mctp_eid_t;
 #define MCTP_EID_BROADCAST  ((mctp_eid_t)0xFF)
 
 
-typedef packed_enum 
+typedef enum 
 {
     MCTP_MSG_TYPE_CONTROL       = 0x00,
     MCTP_MSG_TYPE_PLDM          = 0x01,
