@@ -11,11 +11,13 @@ set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(
     ${PROJECT_NAME}
     unit/util/util-container-of.cpp
+    dummy.cpp
 )
 
 target_include_directories(
     ${PROJECT_NAME} PRIVATE
     ${PROJECT_ROOT}
+    ${PROJECT_ROOT}/../src
 )
 
 target_link_libraries(
