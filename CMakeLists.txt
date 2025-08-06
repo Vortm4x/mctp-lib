@@ -38,8 +38,8 @@ target_include_directories (
 
 
 set(SANITIZER
-    -fsanitize=address
-    -fno-omit-frame-pointer
+    # -fsanitize=address    
+    # -fno-omit-frame-pointer
 )
 
 target_compile_options(
@@ -53,7 +53,11 @@ target_compile_options(
     -Wmissing-prototypes
     -Wshadow
     -pedantic
-    -save-temps
+    $<${PROJECT_DEBUG}:${SANITIZER}>
+)
+
+target_link_options(
+    ${PROJECT_NAME} PUBLIC
     $<${PROJECT_DEBUG}:${SANITIZER}>
 )
 
