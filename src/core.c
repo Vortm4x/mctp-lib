@@ -79,14 +79,14 @@ void mctp_packet_rx(
 
     const mctp_msg_ctx_t ctx = {
         .remote_eid = rx_header->source,
-        .tag        = rx_header->tag,
-        .tag_owner  = rx_header->tag_owner
+        .tag        = MCTP_HDR_FLAG_GET_MSG_TAG(rx_header->flags),
+        .tag_owner  = MCTP_HDR_FLAG_GET_TAG_OWNER(rx_header->flags)
     };
     const mctp_msg_ctx_raw_t raw_ctx = MCTP_MSG_CTX_RAW(ctx);
 
-    if (rx_header->som)
+    if (MCTP_HDR_FLAG_GET_SOM(rx_header->flags))
     {
-        if (rx_header->eom)
+        if (MCTP_HDR_FLAG_GET_EOM(rx_header->flags))
         {
             mctp_pktq_t *rx_queue = mctp_pktq_create();
             mctp_pktq_enqueue(rx_queue, mctp_pkt_clone(packet));
@@ -123,7 +123,7 @@ void mctp_packet_rx(
             return;
         }
 
-        if (packet->len != MCTP_PKT_MAX_SIZE && !rx_header->eom)
+        if (packet->len != MCTP_PKT_MAX_SIZE && !MCTP_HDR_FLAG_GET_EOM(rx_header->flags))
         {
             mctp_drop_rx_queue(bus, raw_ctx);
             return;
@@ -132,9 +132,11 @@ void mctp_packet_rx(
         const mctp_pkt_t *front_pkt = mctp_pktq_node_data(
             mctp_pktq_front(rx_queue)
         );
-        const uint8_t expected_seq_num = (uint8_t)(front_pkt->io.header.seq_num + 1) % 4;
 
-        if (rx_header->seq_num != expected_seq_num)
+        const uint8_t front_pkt_seq_num = MCTP_HDR_FLAG_GET_SEQ_NUM(front_pkt->io.header.flags);
+        const uint8_t expected_seq_num = (uint8_t)(front_pkt_seq_num + 1) % 4;
+
+        if (MCTP_HDR_FLAG_GET_SEQ_NUM(rx_header->flags) != expected_seq_num)
         {
             mctp_drop_rx_queue(bus, raw_ctx);
             return;
@@ -142,7 +144,7 @@ void mctp_packet_rx(
 
         mctp_pktq_enqueue(rx_queue, mctp_pkt_clone(packet));
 
-        if (rx_header->eom)
+        if (MCTP_HDR_FLAG_GET_EOM(rx_header->flags))
         {
             mctp_msgq_update(bus, rx_queue, &ctx);
             mctp_drop_rx_queue(bus, raw_ctx);

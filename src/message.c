@@ -61,12 +61,11 @@ void mctp_message_disassemble(
     if (tx_queue == NULL) return;
 
     mctp_hdr_t header = {
-        .version    = MCTP_PKT_HDR_VER,
-        .dest       = dest,
-        .source     = source,
-        .tag        = (uint8_t)(msg_tag & 0x7),
-        .tag_owner  = tag_owner,
-        .seq_num    = 0
+            .version    = MCTP_PKT_HDR_VER,
+            .dest       = dest,
+            .source     = source,
+            .flags      = MCTP_HDR_FLAG_SET_TAG_OWNER(0, tag_owner)
+                        | MCTP_HDR_FLAG_SET_MSG_TAG(0, msg_tag)
     };
 
     const size_t pkt_count =
@@ -75,23 +74,29 @@ void mctp_message_disassemble(
 
     for (size_t i = 0; i < pkt_count; ++i)
     {
-        header.som = (i == 0);
-        header.eom = ((i + 1) == pkt_count);
+        const bool is_som = (i == 0);
+        const bool is_eom = ((i + 1) == pkt_count);
+
+        header.flags = MCTP_HDR_FLAG_SET_SOM(header.flags, is_som);
+        header.flags = MCTP_HDR_FLAG_SET_EOM(header.flags, is_eom);
 
         const uint8_t *payload_data = &msg_data[MCTP_BASE_MTU * i];
 
-        const mctp_pkt_size_t payload_len = header.eom
+        const mctp_pkt_size_t payload_len = is_eom
             ? (mctp_pkt_size_t)(msg_len - (MCTP_BASE_MTU * i))
             : MCTP_BASE_MTU;
 
         mctp_pkt_t *packet = mctp_pkt_create();
         memcpy(&packet->io.header, &header, MCTP_PKT_HDR_SIZE);
-        memcpy(&packet->io.body, payload_data, payload_len);
+        memcpy(packet->io.body, payload_data, payload_len);
         packet->len = MCTP_PKT_HDR_SIZE + payload_len;
 
         mctp_pktq_enqueue(tx_queue, packet);
 
-        header.seq_num++;
+        header.flags = MCTP_HDR_FLAG_SET_SEQ_NUM(
+            header.flags,
+            MCTP_HDR_FLAG_GET_SEQ_NUM(header.flags) + 1
+        );
     }
 }
 
